@@ -395,12 +395,6 @@ define("APP_URL", "http://localhost/php/index.php/licitaciones/");
 
 ---
 
-## 📧 Soporte
-
-Para reportar bugs o sugerencias, crear un issue en el repositorio.
-
----
-
 ## 📄 Licencia
 
 Proyecto privado. Todos los derechos reservados.
