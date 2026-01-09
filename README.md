@@ -247,7 +247,7 @@ chmod -R 777 app/views/docs/uploads/
 
 ### Variables de entorno
 
-Crear archivo `.env` en la raíz (opcional):
+Crear archivo `config/app.php` en la raíz:
 
 ```
 APP_URL=http://localhost/php/index.php/licitaciones/
