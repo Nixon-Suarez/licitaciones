@@ -6,7 +6,7 @@
     require_once __DIR__ . "/config/database.php";
 
     // CONSTANTES
-    const SERVER_URL = "http://localhost/php/index.php/Manage_money_website/";
+    const SERVER_URL = "http://localhost/php/index.php/licitaciones/";
     const COMPANY = "MANAGE MONEY";
 
     spl_autoload_register(function($clase){
