@@ -5,11 +5,11 @@
             $listaBlanca = [
                 "dashboard",
                 "logout",   
-                "ofertas",
                 "ofertasNew",
                 "ofertasList",
                 "ofertasDetalle",
-                "ofertasEditar"
+                "ofertasEditar",
+                "actividadList"
             ];
             if(in_array($vistas, $listaBlanca)) {
                 if (is_file("./app/views/content/{$vistas}_view.php")) {

@@ -44,7 +44,7 @@ class ofertaDocumentController extends mainModel
                 'icono' => 'error'
             ];
         }
-        if ($this->verificarDatos("[0-9]{3,100}", $titulo)) {
+        if ($this->verificarDatos("^(?!\s*$)[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]{1,150}$", $titulo)) {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrio un error inesperado",

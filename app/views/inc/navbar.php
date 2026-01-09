@@ -17,17 +17,6 @@
                 <li class="nav-item">
                     <a class="nav-link active" href="<?php echo APP_URL; ?>?view=dashboard">Dashboard</a>
                 </li>
-
-                <!-- Usuarios -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="usuariosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Usuarios
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="usuariosDropdown">
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>?view=userNew/">Nuevo</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>?view=userList">Lista</a></li>
-                    </ul>
-                </li>
                 <!-- ofertas -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="ofertaDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -44,8 +33,7 @@
                         Actividades
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="actividadesDropdown">
-                        <<li><a class="dropdown-item" href="<?php echo APP_URL; ?>?view=ofertasList/">Listado</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>?view=ofertasNew/">Nuevo</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>?view=actividadList/">Listado</a></li>
                     </ul>
                 </li>
             </ul>

@@ -27,16 +27,13 @@ if (isset($_POST['modulo_usuario'])) {
             if ($_POST['modulo_ofertas'] == "actualizar_oferta") {
                 echo $insOferta->ActualizarOfertaControlador();
             }
-            // if ($_POST['modulo_ofertas'] == "eliminar_categoria") {
-            //     echo $insOferta->CambioEstadoCategoriaControlador();
-            // }
         }
         if (isset($_POST['modulo_buscador'])) {
             $insBuscador = new searchController();
             if ($_POST['modulo_buscador'] == "buscar_ofertas")
                 echo $insBuscador->buscarDatosControlador("oferta");
-            if ($_POST['modulo_buscador'] == "buscar_gasto")
-                echo $insBuscador->buscarDatosControlador("gasto");
+            if ($_POST['modulo_buscador'] == "buscar_actividad")
+                echo $insBuscador->buscarDatosControlador("actividad");
         }
         if (isset($_POST['modulo_ofertas_adjunto'])) {
             $insOfertaDoc = new ofertaDocumentController();

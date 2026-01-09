@@ -131,9 +131,8 @@ $hora_cierre = !empty($oferta['hora_cierre']) ?  date('H:i', strtotime($oferta['
                                 <option value="">Seleccione una actividad</option>
                                 <?php
 
-                                use app\controllers\actividadesController;
-
-                                $insActividades = new actividadesController();
+                                use app\controllers\ActividadesController;
+                                $insActividades = new ActividadesController();
                                 $actividades = $insActividades->getActividades();
                                 foreach ($actividades as $actividad) {
                                     $selected = ($actividad->id == $oferta['actividad_id']) ? 'selected' : '';
@@ -238,16 +237,14 @@ $hora_cierre = !empty($oferta['hora_cierre']) ?  date('H:i', strtotime($oferta['
                                                 <a
                                                     href="<?= APP_URL . 'app/views/docs/uploads/ofertas/' . $doc['archivo']; ?>"
                                                     class="btn btn-outline-primary btn-sm"
-                                                    download
-                                                >
+                                                    download>
                                                     <i class="bi bi-download"></i> Descargar
                                                 </a>
 
                                                 <form
                                                     class="FormularioAjax m-0"
                                                     action="<?= APP_URL ?>app/ajax/FunctionAjax.php"
-                                                    method="POST"
-                                                >
+                                                    method="POST">
                                                     <input type="hidden" name="modulo_ofertas_adjunto" value="eliminar_adjunto">
                                                     <input type="hidden" name="document_id" value="<?= $doc['id']; ?>">
 
@@ -301,10 +298,10 @@ $hora_cierre = !empty($oferta['hora_cierre']) ?  date('H:i', strtotime($oferta['
                     <input type="hidden" name="oferta_id" id="oferta_id" value="<?= $id ?>">
                     <!-- Título -->
                     <div class="mb-3">
-                        <label for="    " class="form-label">Titulo</label>
+                        <label for="titulo_adjunto" class="form-label">Titulo</label>
                         <label for="titulo_adjunto" class="form-label asterisco-obligatorio">*</label>
-                        <input type="number" class="form-control"
-                            id="titulo_adjunto" name="titulo_adjunto" pattern="[0-9]{3,100}" required>
+                        <input type="text" class="form-control"
+                            id="titulo_adjunto" name="titulo_adjunto" required>
                         </input>
                     </div>
                     <!-- Descripcion -->

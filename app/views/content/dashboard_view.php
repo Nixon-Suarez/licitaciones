@@ -21,42 +21,20 @@
                 </div>
 
                 <div class="d-flex justify-content-center gap-3">
-                    <a class="btn btn-success" href="<?php echo APP_URL;?>?view=ofertasNew">
+                    <a class="btn btn-primary" href="<?php echo APP_URL;?>?view=ofertasNew">
                         <i class="bi bi-plus-circle"></i> Crear
                     </a>
-                    <a class="btn btn-primary" href="<?php echo APP_URL;?>?view=ofertasList">
+                    <a class="btn btn-outline-primary" href="<?php echo APP_URL;?>?view=ofertasList">
                         <i class="bi bi-eye"></i> Ver
                     </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- USUARIOS -->
-        <div class="col-md-4">
-            <div class="card shadow-sm text-center p-4 bg-success bg-opacity-10 border-0">
-                <h5 class="mb-3 text-success">USUARIOS</h5>
-
-                <div class="d-flex justify-content-center mb-3">
-                    <img src="<?php echo APP_URL; ?>app/views/img/Money.png"
-                         class="rounded-circle img-fluid"
-                         style="width: 128px; height: 128px; object-fit: cover;">
-                </div>
-
-                <div class="d-flex justify-content-center gap-3">
-                    <button class="btn btn-success">
-                        <i class="bi bi-plus-circle"></i> Crear
-                    </button>
-                    <button class="btn btn-outline-success">
-                        <i class="bi bi-eye"></i> Ver
-                    </button>
                 </div>
             </div>
         </div>
 
         <!-- ACTIVIDADES -->
         <div class="col-md-4">
-            <div class="card shadow-sm text-center p-4 bg-warning bg-opacity-10 border-0">
-                <h5 class="mb-3 text-warning">ACTIVIDADES</h5>
+            <div class="card shadow-sm text-center p-4 bg-success bg-opacity-10 border-0">
+                <h5 class="mb-3 text-success">ACTIVIDADES</h5>
 
                 <div class="d-flex justify-content-center mb-3">
                     <img src="<?php echo APP_URL; ?>app/views/img/Money.png"
@@ -65,12 +43,9 @@
                 </div>
 
                 <div class="d-flex justify-content-center gap-3">
-                    <button class="btn btn-warning text-white">
-                        <i class="bi bi-plus-circle"></i> Crear
-                    </button>
-                    <button class="btn btn-outline-warning">
+                    <a class="btn btn-outline-success" href="<?php echo APP_URL;?>?view=actividadList">
                         <i class="bi bi-eye"></i> Ver
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>

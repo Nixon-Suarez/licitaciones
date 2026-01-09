@@ -5,7 +5,7 @@ namespace app\controllers;
 use app\models\mainModel;
 use App\Models\Actividad;
 
-class actividadesController extends mainModel
+class ActividadesController extends mainModel
 {
     public function getActividades($id = null)
     {
@@ -15,12 +15,12 @@ class actividadesController extends mainModel
         return Actividad::select('id', 'producto')->find($id);
     }
 
-    public function listarOfertaControlador($pagina, $registros, $url, $descripcion, $consecutivo)
+    public function listarActividadesControlador($pagina, $registros, $url, $segmento, $producto)
     {
         $pagina = $this->limpiarCadena($pagina);
         $registros = $this->limpiarCadena($registros);
-        $descripcion = $this->limpiarCadena($descripcion);
-        $consecutivo = $this->limpiarCadena($consecutivo);
+        $segmento = $this->limpiarCadena($segmento);
+        $producto = $this->limpiarCadena($producto);
         $url = $this->limpiarCadena($url);
         $url = APP_URL . "?view=" . $url . "/";
         $pagina = (isset($pagina) && $pagina > 0) ? (int)$pagina : 1;
@@ -29,11 +29,11 @@ class actividadesController extends mainModel
         // consulta
         $query = Actividad::query();
         // Filtro por búsqueda
-        if (!empty($descripcion)) {
-            $query->where("descripcion", 'LIKE', "%$descripcion%");
+        if (!empty($segmento)) {
+            $query->where("segmento", 'LIKE', "%$segmento%");
         }
-        if (!empty($consecutivo)) {
-            $query->where("consecutivo", 'LIKE', "%$consecutivo%");
+        if (!empty($producto)) {
+            $query->where("producto", 'LIKE', "%$producto%");
         }
         $consulta_total = (clone $query)->count();
 

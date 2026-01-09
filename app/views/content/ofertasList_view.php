@@ -121,7 +121,7 @@
                 } else {
                     $tabla .= '
                             <tr class="text-center">
-                                <td colspan="4">
+                                <td colspan="8">
                                     No hay registros en el sistema
                                 </td>
                             </tr>
