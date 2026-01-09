@@ -15,7 +15,7 @@
                 <h5 class="mb-3 text-primary">LICITACIONES</h5>
 
                 <div class="d-flex justify-content-center mb-3">
-                    <img src="<?php echo APP_URL; ?>app/views/img/Money.png"
+                    <img src="<?php echo APP_URL; ?>app/views/img/licitaciones.png"
                          class="rounded-circle img-fluid"
                          style="width: 128px; height: 128px; object-fit: cover;">
                 </div>
@@ -37,7 +37,7 @@
                 <h5 class="mb-3 text-success">ACTIVIDADES</h5>
 
                 <div class="d-flex justify-content-center mb-3">
-                    <img src="<?php echo APP_URL; ?>app/views/img/Money.png"
+                    <img src="<?php echo APP_URL; ?>app/views/img/actividades.png"
                          class="rounded-circle img-fluid"
                          style="width: 128px; height: 128px; object-fit: cover;">
                 </div>

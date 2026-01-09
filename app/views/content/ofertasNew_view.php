@@ -48,11 +48,12 @@
                             <label for="objeto" class="form-label">Objeto</label>
                             <input
                                 type="text"
-                                class="form-control"
+                                class="form-control contador-texto"
                                 id="objeto"
                                 name="objeto"
                                 maxlength="50"
                                 required
+                                data-contador="contadorObjeto"
                             >
                             <div class="form-text">
                                 <span id="contadorObjeto">0</span>/150 caracteres
@@ -66,12 +67,13 @@
                         <div class="mb-3">
                             <label for="descripcion" class="form-label">Descripción / Alcance</label>
                             <textarea
-                                class="form-control"
+                                class="form-control contador-texto"
                                 id="descripcion"
                                 name="descripcion"
                                 rows="4"
                                 maxlength="400"
                                 required
+                                data-contador="contadorDescripcion"
                             ></textarea>
                             <div class="form-text">
                                 <span id="contadorDescripcion">0</span>/400 caracteres

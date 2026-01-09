@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-custom shadow-sm fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand me-2" href="<?php echo APP_URL; ?>?view=dashboard">
-            <img src="<?php echo APP_URL; ?>app/views/img/Money.png" class="img-profile me-2">
+            <img src="<?php echo APP_URL; ?>app/views/img/licitacion1.png" class="img-profile me-2">
         </a>
 
         <!-- Botón colapsable (móvil) -->
@@ -46,7 +46,7 @@
                         <?php echo $_SESSION['usuario']; ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="usuarioDropdown">
-                        <li><a class="dropdown-item" href="<?php echo APP_URL . "?view=userUpdate/" . $_SESSION['id'] . "/"; ?>">Mi cuenta</a></li>
+                        <!-- <li><a class="dropdown-item" href="<?php // echo APP_URL . "?view=userUpdate/" . $_SESSION['id'] . "/"; ?>">Mi cuenta</a></li> -->
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href="<?php echo APP_URL; ?>?view=logout/" id="btn_exit">Salir</a></li>
                     </ul>

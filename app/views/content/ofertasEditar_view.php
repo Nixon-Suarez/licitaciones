@@ -53,11 +53,12 @@ $hora_cierre = !empty($oferta['hora_cierre']) ?  date('H:i', strtotime($oferta['
                             <label for="objeto" class="form-label">Objeto</label>
                             <input
                                 type="text"
-                                class="form-control"
+                                class="form-control contador-texto"
                                 id="objeto"
                                 name="objeto"
                                 maxlength="50"
                                 required
+                                data-contador="contadorObjeto"
                                 value="<?= $oferta['objeto'] ?>">
                             <div class="form-text">
                                 <span id="contadorObjeto">0</span>/150 caracteres
@@ -71,11 +72,12 @@ $hora_cierre = !empty($oferta['hora_cierre']) ?  date('H:i', strtotime($oferta['
                         <div class="mb-3">
                             <label for="descripcion" class="form-label">Descripción / Alcance</label>
                             <textarea
-                                class="form-control"
+                                class="form-control contador-texto"
                                 id="descripcion"
                                 name="descripcion"
                                 rows="4"
                                 maxlength="400"
+                                data-contador="contadorDescripcion"
                                 required><?= $oferta['descripcion'] ?? '' ?></textarea>
                             <div class="form-text">
                                 <span id="contadorDescripcion">0</span>/400 caracteres

@@ -38,11 +38,20 @@ document.getElementById('btnGuardarTodo').addEventListener('click', function () 
     });
 });
 
-$(document).ready(function () {
-    $('#actividad').select2({
-        placeholder: "Seleccione una actividad",
-        allowClear: true,
-        width: '100%'
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.contador-texto').forEach(campo => {
+        const contador = document.getElementById(campo.dataset.contador);
+        const max = campo.maxLength;
+
+        const actualizar = () => {
+            contador.textContent = campo.value.length;
+        };
+
+        // Inicial (por si viene con datos)
+        actualizar();
+
+        // En tiempo real
+        campo.addEventListener('input', actualizar);
     });
 });
 
