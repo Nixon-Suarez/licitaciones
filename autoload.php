@@ -5,10 +5,6 @@
     // Cargar configuración de base de datos (Eloquent)
     require_once __DIR__ . "/config/database.php";
 
-    // CONSTANTES
-    const SERVER_URL = "http://localhost/php/index.php/licitaciones/";
-    const COMPANY = "MANAGE MONEY";
-
     spl_autoload_register(function($clase){
         $archivo = __DIR__ . "/" . str_replace("\\", "/", $clase) . ".php";
         if(is_file($archivo)){

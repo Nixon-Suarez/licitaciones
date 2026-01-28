@@ -113,7 +113,7 @@ class ofertaDocumentController extends mainModel
             $nombreLimpio = str_ireplace(" ", "_", pathinfo($document_name, PATHINFO_FILENAME));
             $archivo_ofertas = $nombreLimpio . "_" . rand(1000, 9999) . "_" . time() . $extension;
 
-            // mover la img al directorio de imagenes
+            // mover el doc al directorio de imagenes
             if (!move_uploaded_file($_FILES['gasto_documento']['tmp_name'], $doc_dir . $archivo_ofertas)) {
                 $alerta = [
                     "tipo" => "simple",

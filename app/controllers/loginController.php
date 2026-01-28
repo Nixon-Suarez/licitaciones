@@ -58,7 +58,7 @@
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Ocurrió un error inesperado',
-                                    text: 'Usuario o clave incorrectos123'
+                                    text: 'Usuario o clave incorrectos'
                                     });
                             </script>";
                         }
