@@ -8,9 +8,10 @@ class ofertaDocumentController extends Controller
 {
     public function crearOfertaDocumentControlador()
     {
-        $descripcion = trim($this->limpiarCadena($_POST['descripcion_Adjunto'] ?? ''));
-        $titulo = trim($this->limpiarCadena($_POST['titulo_adjunto'] ?? ''));
-        $id_oferta = trim($this->limpiarCadena($_POST['oferta_id'] ?? ''));
+        $input = json_decode(file_get_contents("php://input"), true);
+        $descripcion = trim($this->limpiarCadena($input['descripcion_Adjunto'] ?? ''));
+        $titulo = trim($this->limpiarCadena($input['titulo_adjunto'] ?? ''));
+        $id_oferta = trim($this->limpiarCadena($input['oferta_id'] ?? ''));
 
         // verificar campos obligatorios
         $campos = [
@@ -18,39 +19,37 @@ class ofertaDocumentController extends Controller
             $descripcion
         ];
         if (in_array("", $campos, true)) {
-            return json_encode([
-                "tipo" => "simple",
-                "titulo" => "Error",
-                "texto" => "No has llenado todos los campos obligatorios",
-                "icono" => "error"
+            http_response_code(400);
+            echo json_encode([
+                "code" => 400,
+                "data" => 'No has llenado todos los campos que son obligatorios'
             ]);
+            return;
         }
         #Verificando integridad de los datos
         if ($this->verificarDatos("^(?!\s*$)[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]{1,150}$", $descripcion)) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrio un error inesperado",
-                "texto" => "La descripcion no coincide con el formato solicitado",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
+            http_response_code(400);
+            echo json_encode([
+                "code" => 400,
+                "data" => 'La descripcion no coincide con el formato solicitado'
+            ]);
+            return;
         }
         if (!is_numeric($id_oferta) || $id_oferta <= 0) {
-            return [
-                'tipo' => 'simple',
-                'titulo' => 'Error',
-                'texto' => 'ID de oferta no válido',
-                'icono' => 'error'
-            ];
+            http_response_code(400);
+            echo json_encode([
+                "code" => 400,
+                "data" => 'ID de oferta no válido'
+            ]);
+            return;
         }
         if ($this->verificarDatos("^(?!\s*$)[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]{1,150}$", $titulo)) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrio un error inesperado",
-                "texto" => "El nombre del titulo no coincide con el formato solicitado",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
+            http_response_code(400);
+            echo json_encode([
+                "code" => 400,
+                "data" => 'El nombre del titulo no coincide con el formato solicitado'
+            ]);
+            return;
         }
         $doc_dir = "../views/docs/uploads/ofertas/";
         $document_name = $_FILES['gasto_documento']['name'];
@@ -58,13 +57,12 @@ class ofertaDocumentController extends Controller
             //  creando directorio si no existe
             if (!file_exists($doc_dir)) {
                 if (!mkdir($doc_dir, 0777)) {
-                    $alerta = [
-                        "tipo" => "simple",
-                        "titulo" => "Ocurrio un error inesperado",
-                        "texto" => "No se pudo crear el directorio",
-                        "icono" => "error"
-                    ];
-                    return json_encode($alerta);
+                    http_response_code(500);
+                    echo json_encode([
+                        "code" => 500,
+                        "data" => 'No se pudo crear el directorio'
+                    ]);
+                    return;
                 }
             }
             // limitar que tipo de archivo
@@ -76,23 +74,21 @@ class ofertaDocumentController extends Controller
             $mimeArchivo = mime_content_type($_FILES['gasto_documento']['tmp_name']);
 
             if (!in_array($mimeArchivo, $mimePermitidos)) {
-                $alerta = [
-                    "tipo" => "simple",
-                    "titulo" => "Ocurrió un error inesperado",
-                    "texto" => "Archivo no permitido, solo se permiten archivos .pdf, .zip",
-                    "icono" => "error"
-                ];
-                return json_encode($alerta);
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => 'Archivo no permitido, solo se permiten archivos .pdf, .zip'
+                ]);
+                return;
             }
             # limitar el peso del archivo
             if (($_FILES['gasto_documento']['size'] / 1024) > 10000) { // 10MB
-                $alerta = [
-                    "tipo" => "simple",
-                    "titulo" => "Ocurrio un error inesperado",
-                    "texto" => "El archivo no puede ser mayor a 10MB",
-                    "icono" => "error"
-                ];
-                return json_encode($alerta);
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => 'El archivo no puede ser mayor a 10MB'
+                ]);
+                return;
             }
             #Extencion del archivo
             switch ($mimeArchivo) {
@@ -114,22 +110,21 @@ class ofertaDocumentController extends Controller
 
             // mover el doc al directorio de imagenes
             if (!move_uploaded_file($_FILES['gasto_documento']['tmp_name'], $doc_dir . $archivo_ofertas)) {
-                $alerta = [
-                    "tipo" => "simple",
-                    "titulo" => "Ocurrio un error inesperado",
-                    "texto" => "Error al subir el archivo, intente nuevamente",
-                    "icono" => "error"
-                ];
-                return json_encode($alerta);
+                http_response_code(500);
+                echo json_encode([
+                    "code" => 500,
+                    "data" => 'Error al subir el archivo, intente nuevamente'
+                ]);
+                return;
             }
-        } else {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrio un error inesperado",
-                "texto" => "Debe seleccionar un adjunto",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
+        }
+        else {
+            http_response_code(400);
+            echo json_encode([
+                "code" => 400,
+                "data" => 'Debe seleccionar un adjunto'
+            ]);
+            return;
         }
         $datos_oferta_reg = [
             "licitacion_id" => $id_oferta,
@@ -142,40 +137,40 @@ class ofertaDocumentController extends Controller
         try {
             $nueva_oferta = OfertaDocumento::create($datos_oferta_reg);
             if ($nueva_oferta) {
-                return json_encode([
-                    "tipo" => "recargar",
-                    "titulo" => "Adjunto creado",
-                    "texto" => "El adjunto ha sido añadido exitosamente",
-                    "icono" => "success",
+                http_response_code(200);
+                echo json_encode([
+                    "code" => 200,
+                    "data" => 'Adjunto creado exitosamente'
                 ]);
-            } else {
-                return json_encode([
-                    "tipo" => "simple",
-                    "titulo" => "Error",
-                    "texto" => "No se pudo el adjunto, por favor intente nuevamente",
-                    "icono" => "error"
+                return;
+            }
+            else {
+                http_response_code(500);
+                echo json_encode([
+                    "code" => 500,
+                    "data" => 'Error al crear el adjunto, intente nuevamente'
                 ]);
             }
-        } catch (\Exception $e) {
-            return json_encode([
-                "tipo" => "simple",
-                "titulo" => "Error",
-                "texto" => "Ocurrió un error al procesar la solicitud: " . $e->getMessage(),
-                "icono" => "error"
+        }
+        catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                "code" => 500,
+                "data" => 'Ocurrió un error al procesar la solicitud: ' . $e->getMessage()
             ]);
         }
     }
 
-    public function getOfertaDocumentControlar($id_of)
+    public function getOfertaDocumentControlador($id_of)
     {
         try {
             if (!is_numeric($id_of) || $id_of <= 0) {
-                return [
-                    'tipo' => 'simple',
-                    'titulo' => 'Error',
-                    'texto' => 'ID de oferta no válido',
-                    'icono' => 'error'
-                ];
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => 'ID de oferta no válido'
+                ]);
+                return;
             }
             $oferta_docs = OfertaDocumento::where("licitacion_id", $id_of)->get();
             // si no hay documentos, devolver un arreglo vacío (para que `empty()` funcione en las vistas)
@@ -185,45 +180,46 @@ class ofertaDocumentController extends Controller
 
             $mapped = $oferta_docs->map(function ($doc) {
                 return [
-                    'id' => $doc->id,
-                    'licitacion_id' => $doc->licitacion_id,
-                    'titulo' => $doc->titulo,
-                    'descripcion' => $doc->descripcion,
-                    'archivo' => $doc->archivo,
+                'id' => $doc->id,
+                'licitacion_id' => $doc->licitacion_id,
+                'titulo' => $doc->titulo,
+                'descripcion' => $doc->descripcion,
+                'archivo' => $doc->archivo,
                 ];
             });
             return $mapped->all();
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             error_log("Error en getOfertaControlador: " . $e->getMessage());
-            return [
-                'tipo' => 'simple',
-                'titulo' => 'Error',
-                'texto' => 'Error al cargar la oferta',
-                'icono' => 'error'
-            ];
+            http_response_code(500);
+            echo json_encode([
+                "code" => 500,
+                "data" => 'Error al cargar la oferta'
+            ]);
+            return;
         }
     }
 
-    public function eliminargetOfertaDocumentControlar()
+    public function eliminarOfertaDocumentControlador()
     {
         $id = trim($this->limpiarCadena($_POST['document_id'] ?? ''));
         try {
             if (!is_numeric($id) || $id <= 0) {
-                return [
-                    'tipo' => 'simple',
-                    'titulo' => 'Error',
-                    'texto' => 'ID de oferta no válido',
-                    'icono' => 'error'
-                ];
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => 'ID de documento no válido'
+                ]);
+                return;
             }
             $oferta_doc = OfertaDocumento::where("id", $id)->first();
             if (!$oferta_doc) {
-                return [
-                    'tipo' => 'simple',
-                    'titulo' => 'No encontrado',
-                    'texto' => 'La oferta no existe',
-                    'icono' => 'error'
-                ];
+                http_response_code(404);
+                echo json_encode([
+                    "code" => 404,
+                    "data" => 'La oferta no existe'
+                ]);
+                return;
             }
             $eliminar_doc = OfertaDocumento::destroy($id);
             if ($eliminar_doc) {
@@ -231,29 +227,30 @@ class ofertaDocumentController extends Controller
                     chmod($oferta_doc['ruta_archivo'] . $oferta_doc['archivo'], 0777);
                     unlink($oferta_doc['ruta_archivo'] . $oferta_doc['archivo']);
                 }
-                $alerta = [
-                    "tipo" => "recargar",
-                    "titulo" => "Documento eliminado",
-                    "texto" => "El archivo " . $oferta_doc['archivo'] . " ha sido eliminado del sistema correctamente",
-                    "icono" => "success"
-                ];
-            } else {
-                $alerta = [
-                    "tipo" => "simple",
-                    "titulo" => "Ocurrió un error inesperado",
-                    "texto" => "No hemos podido eliminar el archivo " . $oferta_doc['archivo'] . " del sistema, por favor intente nuevamente",
-                    "icono" => "error"
-                ];
+                http_response_code(200);
+                echo json_encode([
+                    "code" => 200,
+                    "data" => "El archivo " . $oferta_doc['archivo'] . " ha sido eliminado del sistema correctamente"
+                ]);
+                return;
             }
-            return json_encode($alerta);
-        } catch (\Exception $e) {
+            else {
+                http_response_code(500);
+                echo json_encode([
+                    "code" => 500,
+                    "data" => "No hemos podido eliminar el archivo " . $oferta_doc['archivo'] . " del sistema, por favor intente nuevamente"
+                ]);
+                return;
+            }
+        }
+        catch (\Exception $e) {
             error_log("Error en eliminargetOfertaDocumentControlar: " . $e->getMessage());
-            return [
-                'tipo' => 'simple',
-                'titulo' => 'Error',
-                'texto' => 'Error al cargar la oferta',
-                'icono' => 'error'
-            ];
+            http_response_code(500);
+            echo json_encode([
+                "code" => 500,
+                "data" => 'Error al eliminar el documento, intente nuevamente'
+            ]);
+            return;
         }
     }
 }

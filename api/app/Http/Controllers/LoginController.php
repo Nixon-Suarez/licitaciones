@@ -1,84 +1,99 @@
-<?php   
-namespace App\Http\Controllers;
-use App\Models\Usuario;  
+<?php
 
-class loginController extends Controller {
-    public function iniciarSesionControlador(){
+namespace App\Http\Controllers;
+use App\Models\Usuario;
+use App\Models\Token;
+
+
+class loginController extends Controller
+{
+    public function iniciarSesionControlador()
+    {
         #Almacenar Datos
-        $usuario = trim($this->limpiarCadena($_POST['login_usuario'] ?? ''));
-        $clave = trim($this->limpiarCadena($_POST['login_clave'] ?? ''));
+        $input = json_decode(file_get_contents("php://input"), true);
+        $usuario = trim($this->limpiarCadena($input['login_usuario'] ?? ''));
+        $clave = trim($this->limpiarCadena($input['login_clave'] ?? ''));
         // verificar campos obligatorios
-        if($usuario=="" || $clave==""){
-            echo "<script>
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Ocurrió un error inesperado',
-                            text: 'No has llenado todos los campos que son obligatorios'
-                            });
-				</script>";
+        if ($usuario == "" || $clave == "") {
+            http_response_code(400);
+            echo json_encode([
+                "code" => 400,
+                "data" => 'No has llenado todos los campos que son obligatorios'
+            ]);
+            return;
         }
-        else{
+        else {
             #Verificando integridad de los datos
-            if($this->verificarDatos("[a-zA-Z0-9]{4,20}", $usuario)){
-                echo 
-                "<script>
-                        Swal.fire({  
-                            icon: 'error',
-                            title: 'Ocurrió un error inesperado',
-                            text: 'El USUARIO no coincide con el formato solicitado'
-                            });
-                </script>";
-            }elseif($this->verificarDatos("[a-zA-Z0-9$@.-]{7,100}", $clave)){
-                echo 
-                "<script>
-                    Swal.fire({
-                            icon: 'error',
-                            title: 'Ocurrió un error inesperado',
-                            text: 'La CLAVE no coincide con el formato solicitado'
-                        });
-                </script>";
-            }else{
+            if ($this->verificarDatos("[a-zA-Z0-9]{4,20}", $usuario)) {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => 'El USUARIO no coincide con el formato solicitado'
+                ]);
+                return;
+            }
+            elseif ($this->verificarDatos("[a-zA-Z0-9$@.-]{7,100}", $clave)) {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => 'La CLAVE no coincide con el formato solicitado'
+                ]);
+                return;
+            }
+            else {
                 $check_user = Usuario::where("usuario_usuario", $usuario)->first();
-                if($check_user){
-                    if(password_verify($clave, $check_user->usuario_clave)){
-                        $_SESSION['id'] = $check_user->id;
-                        $_SESSION['nombre'] = $check_user->usuario_nombre;
-                        $_SESSION['apellido'] = $check_user->usuario_apellido;
-                        $_SESSION['usuario'] = $check_user->usuario_usuario;
-                        if(headers_sent()){
-                            echo "<script> window.location.href='".APP_URL."?view=dashboard/'; </script>";
-                        }else{
-                            header("Location: ".APP_URL."?view=dashboard/"); # redirige a la pagina de inicio
+                if ($check_user) {
+                    if (password_verify($clave, $check_user->usuario_clave)) {
+                        $user_data = [
+                            "id" => $check_user->id,
+                            "usuario" => $check_user->usuario_usuario,
+                        ];
+                        $token = bin2hex(random_bytes(32));
+                        $token_hash = hash('sha256', $token);
+                        $datos_acceso = [
+                            "user_id" => $check_user->id,
+                            "token" => $token,
+                            "token_hash" => $token_hash,
+                            "expires_at" => date("Y-m-d H:i:s", strtotime("+1 day")),
+                            "revoked" => false,
+                        ];
+                        $nuevo_acceso = Token::create($datos_acceso);
+                        if ($nuevo_acceso) {
+                            http_response_code(200);
+                            echo json_encode([
+                                'code' => 200,
+                                'data' => $user_data,
+                                'token' => $token
+                            ]);
+                            return;
                         }
-                    }else{
-                        echo
-                        "<script>
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Ocurrió un error inesperado',
-                                text: 'Usuario o clave incorrectos'
-                                });
-                        </script>";
+                        else {
+                            http_response_code(400);
+                            echo json_encode([
+                                "code" => 400,
+                                "data" => 'No se pudo crear el token, por favor intente nuevamente'
+                            ]);
+                            return;
+                        }
                     }
-                }else{
-                    echo 
-                    "<script>
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Ocurrió un error inesperado',
-                            text: 'Usuario o clave incorrectos'
-                            });
-                    </script>";
+                    else {
+                        http_response_code(400);
+                        echo json_encode([
+                            "code" => 400,
+                            "data" => 'La CLAVE no coincide con el formato solicitado'
+                        ]);
+                        return;
+                    }
+                }
+                else {
+                    http_response_code(400);
+                    echo json_encode([
+                        "code" => 400,
+                        "data" => 'Usuario o clave incorrectos'
+                    ]);
+                    return;
                 }
             }
-        }
-    }
-    public function cerrarSesionControlador(){
-        session_destroy(); 
-        if(headers_sent()){
-            echo "<script> window.location.href='".APP_URL."?view=login/'; </script>";
-        }else{
-            header("Location: ".APP_URL."?view=login/"); # redirige a la pagina de inicio
         }
     }
 }
