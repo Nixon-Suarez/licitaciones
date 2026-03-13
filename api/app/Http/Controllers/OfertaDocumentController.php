@@ -160,7 +160,6 @@ class ofertaDocumentController extends Controller
             ]);
         }
     }
-
     public function getOfertaDocumentControlador($id_of)
     {
         try {
@@ -199,10 +198,10 @@ class ofertaDocumentController extends Controller
             return;
         }
     }
-
     public function eliminarOfertaDocumentControlador()
     {
-        $id = trim($this->limpiarCadena($_POST['document_id'] ?? ''));
+        $input = json_decode(file_get_contents("php://input"), true);
+        $id = trim($this->limpiarCadena($input['document_id'] ?? ''));
         try {
             if (!is_numeric($id) || $id <= 0) {
                 http_response_code(400);

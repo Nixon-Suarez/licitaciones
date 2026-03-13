@@ -369,7 +369,6 @@ class ofertaController extends Controller
     public function listarOfertaControlador($pagina, $registros, $url, $descripcion, $consecutivo)
     {
         try {
-
             $pagina = $this->limpiarCadena($pagina);
             $registros = $this->limpiarCadena($registros);
             $descripcion = $this->limpiarCadena($descripcion);
