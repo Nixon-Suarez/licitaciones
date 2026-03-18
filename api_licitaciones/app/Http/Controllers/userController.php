@@ -105,11 +105,10 @@ class userController extends Controller
             ]);
         }
     }
-    public function eliminarUsuarioControlador(){
-        $input = json_decode(file_get_contents("php://input"), true);
-        $id = trim($this->limpiarCadena($input['user_id'] ?? ''));
+    public function eliminarUsuarioControlador($id_user){
+        $id = trim($this->limpiarCadena($id_user ?? ''));
         try {
-            if (!is_numeric($id) || $id <= 0) { Validar ID si se nombre asi
+            if (!is_numeric($id) || $id <= 0) {
                 http_response_code(400);
                 echo json_encode([
                     "code" => 400,
@@ -117,7 +116,7 @@ class userController extends Controller
                 ]);
                 return;
             }
-            $oferta_doc = Usuario::where("id", $id)->first(); Validar ID si se nombre asi
+            $oferta_doc = Usuario::where("id_usuario", $id)->first();
             if (!$oferta_doc) {
                 http_response_code(404);
                 echo json_encode([
@@ -159,7 +158,7 @@ class userController extends Controller
         #Almacenar Datos
         $input = json_decode(file_get_contents("php://input"), true);
 
-        $id = trim($this->limpiarCadena($input['oferta_id'] ?? ''));
+        $id = trim($this->limpiarCadena($input['id_usuario'] ?? ''));
         $input = json_decode(file_get_contents("php://input"), true);
         $usuario_nombre = trim($this->limpiarCadena($input['register_nombre'] ?? ''));
         $usuario_apellido = trim($this->limpiarCadena($input['register_apellido'] ?? ''));

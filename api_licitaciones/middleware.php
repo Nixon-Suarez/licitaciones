@@ -1,11 +1,12 @@
 <?php
+
 namespace App\Middleware;
 
 use App\Models\Token;
 
 class Protection
 {
-    protected function verificarToken()
+    public function verificarToken()
     {
 
         $headers = getallheaders();
@@ -23,9 +24,9 @@ class Protection
             ->where('token_hash', $token_hash)
             ->where('revoked', 0)
             ->where(function ($query) {
-            $query->where('expires_at', '>', date('Y-m-d H:i:s'))
-                ->orWhereNull('expires_at');
-        })
+                $query->where('expires_at', '>', date('Y-m-d H:i:s'))
+                    ->orWhereNull('expires_at');
+            })
             ->first();
 
         if (!$tokensGuardado) {

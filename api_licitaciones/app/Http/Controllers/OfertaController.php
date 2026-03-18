@@ -169,7 +169,6 @@ class ofertaController extends Controller
         $indice_oferta = "PO-$consecutivo-$anio";
         return $indice_oferta;
     }
-
     public function ActualizarOfertaControlador()
     {
         try {
@@ -366,15 +365,13 @@ class ofertaController extends Controller
         }
     }
 
-    public function listarOfertaControlador($pagina, $registros, $url, $descripcion, $consecutivo)
+    public function listarOfertaControlador($pagina, $registros, $descripcion, $consecutivo)
     {
         try {
             $pagina = $this->limpiarCadena($pagina);
             $registros = $this->limpiarCadena($registros);
             $descripcion = $this->limpiarCadena($descripcion);
             $consecutivo = $this->limpiarCadena($consecutivo);
-            $url = $this->limpiarCadena($url);
-            $url = APP_URL . "?view=" . $url . "/";
             $pagina = (isset($pagina) && $pagina > 0) ? (int)$pagina : 1;
             $inicio = ($pagina > 0) ? (($registros * $pagina) - $registros) : 0;
             $registros = ($registros > 0) ? (int)$registros : 10;
@@ -403,7 +400,6 @@ class ofertaController extends Controller
                     'datos' => $consulta_datos,
                     'total' => $consulta_total,
                     'paginas' => $numeroPaginas,
-                    'url' => $url,
                     'pagina_actual' => $pagina,
                     'inicio' => $inicio + 1
                 ]

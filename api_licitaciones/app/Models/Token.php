@@ -9,7 +9,7 @@ class Token extends Model
 {
     use HasFactory;
 
-    protected $table = 'tokens';
+    protected $table = 'api_tokens';
 
     const CREATED_AT = 'created_at';
     const UPDATED_AT = null;
@@ -39,7 +39,7 @@ class Token extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class , 'user_id');
+        return $this->belongsTo(Usuario::class , 'user_id');
     }
 
     /**
@@ -57,7 +57,7 @@ class Token extends Model
     {
         return $query->where(function ($q) {
             $q->whereNull('expires_at')
-                ->orWhere('expires_at', '>', now());
+                ->orWhere('expires_at', '>', date('Y-m-d H:i:s'));
         });
     }
 
@@ -69,7 +69,6 @@ class Token extends Model
         if (!$this->expires_at) {
             return false;
         }
-
         return $this->expires_at->isPast();
     }
 

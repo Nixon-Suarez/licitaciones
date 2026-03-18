@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Actividad;
+use App\models\Actividad;
 
 class ActividadesController extends Controller
 {
@@ -43,15 +43,13 @@ class ActividadesController extends Controller
         }
     }
 
-    public function listarActividadesControlador($pagina, $registros, $url, $segmento, $producto)
+    public function listarActividadesControlador($pagina, $registros, $segmento, $producto)
     {
         try {
             $pagina = $this->limpiarCadena($pagina);
             $registros = $this->limpiarCadena($registros);
             $segmento = $this->limpiarCadena($segmento);
             $producto = $this->limpiarCadena($producto);
-            $url = $this->limpiarCadena($url);
-            $url = APP_URL . "?view=" . $url . "/";
             $pagina = (isset($pagina) && $pagina > 0) ? (int)$pagina : 1;
             $inicio = ($pagina > 0) ? (($registros * $pagina) - $registros) : 0;
             $registros = ($registros > 0) ? (int)$registros : 10;
@@ -77,7 +75,6 @@ class ActividadesController extends Controller
                 'datos' => $consulta_datos,
                 'total' => $consulta_total,
                 'paginas' => $numeroPaginas,
-                'url' => $url,
                 'pagina_actual' => $pagina,
                 'inicio' => $inicio + 1
             ];

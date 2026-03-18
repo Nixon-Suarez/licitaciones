@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\OfertaDocumento;
+use App\Models\OfertaDocumento; 
 
 class ofertaDocumentController extends Controller
 {
