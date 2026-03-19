@@ -55,7 +55,7 @@ class ComposerStaticInit95df92acc465cc692177ad724579d04b
         ),
         'A' => 
         array (
-            'App\\Models\\' => 11,
+            'App\\' => 4,
         ),
     );
 
@@ -127,9 +127,9 @@ class ComposerStaticInit95df92acc465cc692177ad724579d04b
         array (
             0 => __DIR__ . '/..' . '/brick/math/src',
         ),
-        'App\\Models\\' => 
+        'App\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/app/models/eloquent',
+            0 => __DIR__ . '/../..' . '/app',
         ),
     );
 

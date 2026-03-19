@@ -7,157 +7,167 @@ use App\Models\OfertaDocumento;
 class ofertaDocumentController extends Controller
 {
     public function crearOfertaDocumentControlador()
-    {
-        $input = json_decode(file_get_contents("php://input"), true);
-        $descripcion = trim($this->limpiarCadena($input['descripcion_Adjunto'] ?? ''));
-        $titulo = trim($this->limpiarCadena($input['titulo_adjunto'] ?? ''));
-        $id_oferta = trim($this->limpiarCadena($input['oferta_id'] ?? ''));
+    {   
+        try{
+            $input = json_decode(file_get_contents("php://input"), true);
+            $descripcion = trim($this->limpiarCadena($input['descripcion_Adjunto'] ?? ''));
+            $titulo = trim($this->limpiarCadena($input['titulo_adjunto'] ?? ''));
+            $id_oferta = trim($this->limpiarCadena($input['oferta_id'] ?? ''));
 
-        // verificar campos obligatorios
-        $campos = [
-            $titulo,
-            $descripcion
-        ];
-        if (in_array("", $campos, true)) {
-            http_response_code(400);
-            echo json_encode([
-                "code" => 400,
-                "data" => 'No has llenado todos los campos que son obligatorios'
-            ]);
-            return;
-        }
-        #Verificando integridad de los datos
-        if ($this->verificarDatos("^(?!\s*$)[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]{1,150}$", $descripcion)) {
-            http_response_code(400);
-            echo json_encode([
-                "code" => 400,
-                "data" => 'La descripcion no coincide con el formato solicitado'
-            ]);
-            return;
-        }
-        if (!is_numeric($id_oferta) || $id_oferta <= 0) {
-            http_response_code(400);
-            echo json_encode([
-                "code" => 400,
-                "data" => 'ID de oferta no válido'
-            ]);
-            return;
-        }
-        if ($this->verificarDatos("^(?!\s*$)[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]{1,150}$", $titulo)) {
-            http_response_code(400);
-            echo json_encode([
-                "code" => 400,
-                "data" => 'El nombre del titulo no coincide con el formato solicitado'
-            ]);
-            return;
-        }
-        $doc_dir = "../views/docs/uploads/ofertas/";
-        $document_name = $_FILES['gasto_documento']['name'];
-        if ($document_name != "" && $_FILES['gasto_documento']['size'] > 0) {
-            //  creando directorio si no existe
-            if (!file_exists($doc_dir)) {
-                if (!mkdir($doc_dir, 0777)) {
+            // verificar campos obligatorios
+            $campos = [
+                $titulo,
+                $descripcion
+            ];
+            if (in_array("", $campos, true)) {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => 'No has llenado todos los campos que son obligatorios'
+                ]);
+                return;
+            }
+            #Verificando integridad de los datos
+            if ($this->verificarDatos("^(?!\s*$)[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]{1,150}$", $descripcion)) {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => 'La descripcion no coincide con el formato solicitado'
+                ]);
+                return;
+            }
+            if (!is_numeric($id_oferta) || $id_oferta <= 0) {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => 'ID de oferta no válido'
+                ]);
+                return;
+            }
+            if ($this->verificarDatos("^(?!\s*$)[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]{1,150}$", $titulo)) {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => 'El nombre del titulo no coincide con el formato solicitado'
+                ]);
+                return;
+            }
+            $doc_dir = "../views/docs/uploads/ofertas/";
+            $document_name = $_FILES['gasto_documento']['name'];
+            if ($document_name != "" && $_FILES['gasto_documento']['size'] > 0) {
+                //  creando directorio si no existe
+                if (!file_exists($doc_dir)) {
+                    if (!mkdir($doc_dir, 0777)) {
+                        http_response_code(500);
+                        echo json_encode([
+                            "code" => 500,
+                            "data" => 'No se pudo crear el directorio'
+                        ]);
+                        return;
+                    }
+                }
+                // limitar que tipo de archivo
+                $mimePermitidos = [
+                    'application/pdf',
+                    'application/zip'
+                ];
+
+                $mimeArchivo = mime_content_type($_FILES['gasto_documento']['tmp_name']);
+
+                if (!in_array($mimeArchivo, $mimePermitidos)) {
+                    http_response_code(400);
+                    echo json_encode([
+                        "code" => 400,
+                        "data" => 'Archivo no permitido, solo se permiten archivos .pdf, .zip'
+                    ]);
+                    return;
+                }
+                # limitar el peso del archivo
+                if (($_FILES['gasto_documento']['size'] / 1024) > 10000) { // 10MB
+                    http_response_code(400);
+                    echo json_encode([
+                        "code" => 400,
+                        "data" => 'El archivo no puede ser mayor a 10MB'
+                    ]);
+                    return;
+                }
+                #Extencion del archivo
+                switch ($mimeArchivo) {
+                    case 'application/pdf':
+                        $extension = '.pdf';
+                        break;
+                    case 'application/zip':
+                        $extension = '.zip';
+                        break;
+                    default:
+                        $extension = '.pdf';
+                }
+
+                chmod($doc_dir, 0777);
+
+                // renombra la archivo_ofertas
+                $nombreLimpio = str_ireplace(" ", "_", pathinfo($document_name, PATHINFO_FILENAME));
+                $archivo_ofertas = $nombreLimpio . "_" . rand(1000, 9999) . "_" . time() . $extension;
+
+                // mover el doc al directorio de imagenes
+                if (!move_uploaded_file($_FILES['gasto_documento']['tmp_name'], $doc_dir . $archivo_ofertas)) {
                     http_response_code(500);
                     echo json_encode([
                         "code" => 500,
-                        "data" => 'No se pudo crear el directorio'
+                        "data" => 'Error al subir el archivo, intente nuevamente'
                     ]);
                     return;
                 }
             }
-            // limitar que tipo de archivo
-            $mimePermitidos = [
-                'application/pdf',
-                'application/zip'
-            ];
-
-            $mimeArchivo = mime_content_type($_FILES['gasto_documento']['tmp_name']);
-
-            if (!in_array($mimeArchivo, $mimePermitidos)) {
-                http_response_code(400);
-                echo json_encode([
-                    "code" => 400,
-                    "data" => 'Archivo no permitido, solo se permiten archivos .pdf, .zip'
-                ]);
-                return;
-            }
-            # limitar el peso del archivo
-            if (($_FILES['gasto_documento']['size'] / 1024) > 10000) { // 10MB
-                http_response_code(400);
-                echo json_encode([
-                    "code" => 400,
-                    "data" => 'El archivo no puede ser mayor a 10MB'
-                ]);
-                return;
-            }
-            #Extencion del archivo
-            switch ($mimeArchivo) {
-                case 'application/pdf':
-                    $extension = '.pdf';
-                    break;
-                case 'application/zip':
-                    $extension = '.zip';
-                    break;
-                default:
-                    $extension = '.pdf';
-            }
-
-            chmod($doc_dir, 0777);
-
-            // renombra la archivo_ofertas
-            $nombreLimpio = str_ireplace(" ", "_", pathinfo($document_name, PATHINFO_FILENAME));
-            $archivo_ofertas = $nombreLimpio . "_" . rand(1000, 9999) . "_" . time() . $extension;
-
-            // mover el doc al directorio de imagenes
-            if (!move_uploaded_file($_FILES['gasto_documento']['tmp_name'], $doc_dir . $archivo_ofertas)) {
-                http_response_code(500);
-                echo json_encode([
-                    "code" => 500,
-                    "data" => 'Error al subir el archivo, intente nuevamente'
-                ]);
-                return;
-            }
-        }
-        else {
-            http_response_code(400);
-            echo json_encode([
-                "code" => 400,
-                "data" => 'Debe seleccionar un adjunto'
-            ]);
-            return;
-        }
-        $datos_oferta_reg = [
-            "licitacion_id" => $id_oferta,
-            "descripcion" => $descripcion,
-            "titulo" => $titulo,
-            "archivo" => $archivo_ofertas,
-            "ruta_archivo" => $doc_dir,
-            "creado_en" => date("Y-m-d H:i:s")
-        ];
-        try {
-            $nueva_oferta = OfertaDocumento::create($datos_oferta_reg);
-            if ($nueva_oferta) {
-                http_response_code(200);
-                echo json_encode([
-                    "code" => 200,
-                    "data" => 'Adjunto creado exitosamente'
-                ]);
-                return;
-            }
             else {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => 'Debe seleccionar un adjunto'
+                ]);
+                return;
+            }
+            $datos_oferta_reg = [
+                "licitacion_id" => $id_oferta,
+                "descripcion" => $descripcion,
+                "titulo" => $titulo,
+                "archivo" => $archivo_ofertas,
+                "ruta_archivo" => $doc_dir,
+                "creado_en" => date("Y-m-d H:i:s")
+            ];
+            try {
+                $nueva_oferta = OfertaDocumento::create($datos_oferta_reg);
+                if ($nueva_oferta) {
+                    http_response_code(200);
+                    echo json_encode([
+                        "code" => 200,
+                        "data" => 'Adjunto creado exitosamente'
+                    ]);
+                    return;
+                }
+                else {
+                    http_response_code(500);
+                    echo json_encode([
+                        "code" => 500,
+                        "data" => 'Error al crear el adjunto, intente nuevamente'
+                    ]);
+                }
+            }
+            catch (\Exception $e) {
                 http_response_code(500);
                 echo json_encode([
                     "code" => 500,
-                    "data" => 'Error al crear el adjunto, intente nuevamente'
+                    "data" => 'Ocurrió un error al procesar la solicitud: ' . $e->getMessage()
                 ]);
             }
-        }
-        catch (\Exception $e) {
+        }catch (\Exception $e) {
+            error_log("Error en crearOfertaDocumentControlador: " . $e->getMessage());
             http_response_code(500);
             echo json_encode([
                 "code" => 500,
-                "data" => 'Ocurrió un error al procesar la solicitud: ' . $e->getMessage()
+                "data" => 'Error al crear el adjunto, intente nuevamente'
             ]);
+            return;
         }
     }
     public function getOfertaDocumentControlador($id_of)

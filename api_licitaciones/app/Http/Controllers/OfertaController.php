@@ -148,26 +148,30 @@ class ofertaController extends Controller
         }
     }
     public function crearConsecutivoOfertaControlador()
-    {
-        // consecutivo 
-        $anio = date('y');
+    {   
+        try{
+            // consecutivo 
+            $anio = date('y');
 
-        $ultimo = Oferta::where('consecutivo', 'LIKE', "PO-%-$anio")
-            ->orderBy('id', 'DESC')
-            ->first();
+            $ultimo = Oferta::where('consecutivo', 'LIKE', "PO-%-$anio")
+                ->orderBy('id', 'DESC')
+                ->first();
 
-        if ($ultimo) {
-            $ultimo_numero = (int)explode('-', $ultimo->consecutivo)[1];
-            $nuevo_numero = $ultimo_numero + 1;
+            if ($ultimo) {
+                $ultimo_numero = (int)explode('-', $ultimo->consecutivo)[1];
+                $nuevo_numero = $ultimo_numero + 1;
+            }
+            else {
+                $nuevo_numero = 1;
+            }
+            // ceros a la izquierda (4 dÃ­gitos)
+            $consecutivo = str_pad($nuevo_numero, 4, '0', STR_PAD_LEFT);
+
+            $indice_oferta = "PO-$consecutivo-$anio";
+            return $indice_oferta;
+        }catch (\Exception $e) {
+            throw new \Exception("Error al generar el consecutivo: " . $e->getMessage());
         }
-        else {
-            $nuevo_numero = 1;
-        }
-        // ceros a la izquierda (4 dÃ­gitos)
-        $consecutivo = str_pad($nuevo_numero, 4, '0', STR_PAD_LEFT);
-
-        $indice_oferta = "PO-$consecutivo-$anio";
-        return $indice_oferta;
     }
     public function ActualizarOfertaControlador()
     {

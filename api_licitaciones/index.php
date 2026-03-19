@@ -1,4 +1,7 @@
 <?php
+require_once "./config/app.php";
+require_once __DIR__ . "/vendor/autoload.php";
+require_once "./config/database.php";
 
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
@@ -13,7 +16,16 @@ use App\Http\Controllers\ofertaController;
 use App\Http\Controllers\userController;
 
 $method = $_SERVER['REQUEST_METHOD'];
-$uri = explode('?', $_SERVER['REQUEST_URI'])[0];
+$requestUri = $_SERVER['REQUEST_URI'];
+$basePath = '/php/index.php/licitaciones/api_licitaciones';
+
+if (strpos($requestUri, $basePath) === 0) {
+    $uri = substr($requestUri, strlen($basePath));
+} else {
+    $uri = $requestUri;
+}
+
+$uri = explode('?', $uri)[0];
 
 $auth = new Protection();
 
@@ -23,9 +35,14 @@ $auth = new Protection();
 |--------------------------------------------------------------------------
 */
 
-if(preg_match('/\/api\/actividad\/find\/(\d+)/', $uri, $matches) && $method == "GET") {
+if ($uri == "/" && $method == "GET") {
+    echo json_encode(["message" => "API Licitaciones"]);
+    exit;
+}
 
-    $auth->verificarToken(); 
+if (preg_match('/\/api\/actividad\/find\/(\d+)/', $uri, $matches) && $method == "GET") {
+
+    $auth->verificarToken();
     $id_actividad = $matches[1];
 
     $controller = new ActividadesController();
@@ -60,7 +77,7 @@ if ($uri == "/api/user/insert" && $method == "POST") {
     $controller = new userController();
     $controller->registrarUsuarioControlador();
     exit;
-}   
+}
 
 if (preg_match('/^\/api\/user\/delete\/(\d+)$/', $uri, $matches) && $method == "DELETE") {
 
@@ -73,7 +90,7 @@ if (preg_match('/^\/api\/user\/delete\/(\d+)$/', $uri, $matches) && $method == "
 }
 
 if ($uri == "/api/user/update" && $method == "PUT") {
-    
+
     $auth->verificarToken();
 
     $controller = new userController();
@@ -82,7 +99,7 @@ if ($uri == "/api/user/update" && $method == "PUT") {
 }
 
 if ($uri == "/api/ofertaDocumento/insert" && $method == "POST") {
-    
+
     $auth->verificarToken();
 
     $controller = new ofertaDocumentController();
@@ -90,13 +107,13 @@ if ($uri == "/api/ofertaDocumento/insert" && $method == "POST") {
     exit;
 }
 
-if(preg_match('/\/api\/ofertaDocumento\/find\/(\d+)/', $uri, $matches) && $method == "GET") {
+if (preg_match('/\/api\/ofertaDocumento\/find\/(\d+)/', $uri, $matches) && $method == "GET") {
 
     $auth->verificarToken();
     $id_documento = $matches[1];
 
     $controller = new ofertaDocumentController();
-    $controller->getOfertaDocumentControlar($id_documento);
+    $controller->getOfertaDocumentControlador($id_documento);
     exit;
 }
 
@@ -106,12 +123,12 @@ if (preg_match('/^\/api\/ofertaDocumento\/delete\/(\d+)$/', $uri, $matches) && $
     $id_documento = $matches[1];
 
     $controller = new ofertaDocumentController();
-    $controller->eliminarOfertaDocumentControlador($id_documento);
+    $controller->eliminarOfertaDocumentControlador();
     exit;
 }
 
 if ($uri == "/api/oferta/insert" && $method == "POST") {
-    
+
     $auth->verificarToken();
 
     $controller = new ofertaController();
@@ -119,7 +136,7 @@ if ($uri == "/api/oferta/insert" && $method == "POST") {
     exit;
 }
 
-if(preg_match('/\/api\/oferta\/find\/(\d+)/', $uri, $matches) && $method == "GET") {
+if (preg_match('/\/api\/oferta\/find\/(\d+)/', $uri, $matches) && $method == "GET") {
 
     $auth->verificarToken();
     $id_oferta = $matches[1];
@@ -144,7 +161,7 @@ if (preg_match('/\/api\/oferta\/list\/(\d+)\/(\d+)\/(\d+)\/(\d+)/', $uri, $match
 }
 
 if ($uri == "/api/oferta/update" && $method == "PUT") {
-    
+
     $auth->verificarToken();
 
     $controller = new ofertaController();
@@ -155,6 +172,6 @@ if ($uri == "/api/oferta/update" && $method == "PUT") {
 
 http_response_code(404);
 echo json_encode([
-    "code"=>404,
-    "data"=>"Ruta no encontrada"
+    "code" => 404,
+    "data" => "Ruta no encontrada"
 ]);
