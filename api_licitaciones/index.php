@@ -29,11 +29,18 @@ $uri = explode('?', $uri)[0];
 
 $auth = new Protection();
 
-/*
-|--------------------------------------------------------------------------
-| Rutas
-|--------------------------------------------------------------------------
-*/
+
+// Manejo de peticiones OPTIONS (CORS preflight)
+if ($method == "OPTIONS") {
+    http_response_code(200);
+    exit;
+}
+
+// Debug: Log de la petición
+error_log("Method: $method, URI: $uri");
+
+
+// Rutas
 
 if ($uri == "/" && $method == "GET") {
     echo json_encode(["message" => "API Licitaciones"]);
