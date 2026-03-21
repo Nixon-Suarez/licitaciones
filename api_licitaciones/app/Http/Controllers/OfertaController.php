@@ -301,7 +301,7 @@ class ofertaController extends Controller
                 http_response_code(200);
                 echo json_encode([
                     "code" => 200,
-                    "data" => "El gasto " . $descripcion . " ha sido registrado exitosamente"
+                    "data" => "la oferta " . $id . " ha sido actualizada exitosamente"
                 ]);
                 return;
             }
@@ -309,7 +309,7 @@ class ofertaController extends Controller
                 http_response_code(400);
                 echo json_encode([
                     "code" => 400,
-                    "data" => "No se pudo registrar el gasto, por favor intente nuevamente"
+                    "data" => "No se pudo registrar la oferta, por favor intente nuevamente"
                 ]);
                 return;
             }
