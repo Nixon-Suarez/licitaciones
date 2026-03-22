@@ -30,6 +30,7 @@ const router = createRouter({
       name: 'actividadList',
       component: 234
     }
+    // usuarioUpdate
   ],
 })
 

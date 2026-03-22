@@ -22,15 +22,15 @@
                     </div>
                     <!-- Botón Registrarse-->
                     <div class="d-grid mt-4">
-                        <button @click="modalRegistro=true" type="button" class="btn btn-custom">Registrarse</button>
+                        <button type="button" class="btn btn-custom" @click="modalRegistro = true">Registrarse</button>
                     </div>
                 </form>
             </div>
             <div v-if="alertaEstado" class="alert alert-danger mt-3" role="alert">
                 {{ alertaMensaje }}
             </div>
-            <div v-if="modalRegistro"></div>
         </div>
+        <RegistroModal :visible="modalRegistro" @close="modalRegistro = false" />
     </div>
     <div>
 
@@ -40,17 +40,19 @@
 <script>
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore'
+import RegistroModal from '@/components/RegistroModal.vue'
 
 export default {
   name: "LoginView",
+  components: {
+    RegistroModal
+  },
   data(){
     return {
         usuario:{
             login_usuario: '',
             login_clave: ''
         },
-        alertaEstado: false,
-        alertaMensaje: '',
         modalRegistro: false,
     }
   },
@@ -74,15 +76,6 @@ export default {
         })
         .catch((error) => {
             console.error("Error en la solicitud:", error);
-            this.alertaEstado = true;
-            if(error.response.status === 401){
-                this.alertaMensaje = error.response.data.data;
-            }else{
-                this.alertaMensaje = "Ocurrió un error en el servidor";
-            }
-            setTimeout(() => {
-                this.alertaEstado = false;
-            }, 1500);
         })
     }
   }

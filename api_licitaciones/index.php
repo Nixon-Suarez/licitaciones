@@ -79,8 +79,6 @@ if ($uri == "/api/user/login" && $method == "POST") {
 
 if ($uri == "/api/user/insert" && $method == "POST") {
 
-    $auth->verificarToken();
-
     $controller = new userController();
     $controller->registrarUsuarioControlador();
     exit;
