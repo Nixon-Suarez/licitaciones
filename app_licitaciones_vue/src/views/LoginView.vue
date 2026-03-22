@@ -41,6 +41,7 @@
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore'
 import RegistroModal from '@/components/RegistroModal.vue'
+import { showAlert, confirmAlert } from '@/stores/alertStore'
 
 export default {
   name: "LoginView",
