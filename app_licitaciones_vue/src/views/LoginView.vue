@@ -26,9 +26,6 @@
                     </div>
                 </form>
             </div>
-            <div v-if="alertaEstado" class="alert alert-danger mt-3" role="alert">
-                {{ alertaMensaje }}
-            </div>
         </div>
         <RegistroModal :visible="modalRegistro" @close="modalRegistro = false" />
     </div>
@@ -41,7 +38,7 @@
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore'
 import RegistroModal from '@/components/RegistroModal.vue'
-import { showAlert, confirmAlert } from '@/stores/alertStore'
+import { alertas_ajax } from '@/stores/alertStore'
 
 export default {
   name: "LoginView",
@@ -73,10 +70,33 @@ export default {
                 authStore.Login(datos);
                 // redireccion a home
                 this.$router.push('/inicio');
+                return alertas_ajax({
+                    tipo: 'simple',
+                    icono: 'success',
+                    titulo: 'Exito',
+                    texto: "Bienvenido " + response.data.data.usuario
+                })
             }
         })
         .catch((error) => {
             console.error("Error en la solicitud:", error);
+            if (error.response && error.response.status === 400) {
+              // Manejar errores 400 específicamente
+              return alertas_ajax({
+                tipo: 'simple',
+                icono: 'error',
+                titulo: 'Error',
+                texto: error.response.data.data || 'Error desconocido'
+              });
+            } else {
+              // Para otros errores (500, etc.)
+              return alertas_ajax({
+                tipo: 'simple',
+                icono: 'error',
+                titulo: 'Error del servidor',
+                texto: 'Ocurrió un error inesperado. Inténtalo de nuevo.'
+              });
+            }
         })
     }
   }

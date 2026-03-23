@@ -57,7 +57,6 @@
 
 <script>
 import { useAuthStore } from '@/stores/authStore'
-import { showAlert, confirmAlert } from '@/stores/alertStore'
 
 export default {
   name: "InicioView",
