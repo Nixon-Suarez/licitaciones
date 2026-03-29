@@ -97,30 +97,30 @@ export default {
       this.modalCreateUser = false;
       this.$emit('close');
     },
-      register(){
-        const authStore = useAuthStore()
-        const API_URL = authStore.baseUrl
-        axios.post(API_URL + 'user/insert', this.usuario)
-        .then(response => {
-            if(response.data.code == 200){
-                // si se creó el usuario, cerrar modal y redireccionar a login
-                this.$emit('close');
-                this.$router.push('/');
-            }
-        })
-        .catch((error) => {
-            console.error("Error en la solicitud:", error);
-            this.alertaEstado = true;
-            if(error.response.status === 401){
-                this.alertaMensaje = error.response.data.data;
-            }else{
-                this.alertaMensaje = "Ocurrió un error en el servidor";
-            }
-            setTimeout(() => {
-                this.alertaEstado = false;
-            }, 1500);
-        })
-      }
+    register(){
+      const authStore = useAuthStore()
+      const API_URL = authStore.baseUrl
+      axios.post(API_URL + 'user/insert', this.usuario)
+      .then(response => {
+          if(response.data.code == 200){
+              // si se creó el usuario, cerrar modal y redireccionar a login
+              this.$emit('close');
+              this.$router.push('/');
+          }
+      })
+      .catch((error) => {
+          console.error("Error en la solicitud:", error);
+          this.alertaEstado = true;
+          if(error.response.status === 401){
+              this.alertaMensaje = error.response.data.data;
+          }else{
+              this.alertaMensaje = "Ocurrió un error en el servidor";
+          }
+          setTimeout(() => {
+              this.alertaEstado = false;
+          }, 1500);
+      })
+    }
   }
 }
 </script>

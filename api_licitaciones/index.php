@@ -57,6 +57,15 @@ if (preg_match('/\/api\/actividad\/find\/(\d+)/', $uri, $matches) && $method == 
     exit;
 }
 
+if ('api/actividad/get' && $method == "GET") {
+
+    $auth->verificarToken();
+
+    $controller = new ActividadesController();
+    $controller->getActividades();
+    exit;
+}
+
 if (preg_match('/\/api\/actividad\/list\/(\d+)\/(\d+)\/(\d+)\/(\d+)/', $uri, $matches) && $method == "GET") {
 
     $auth->verificarToken();

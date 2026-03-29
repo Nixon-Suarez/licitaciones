@@ -22,8 +22,8 @@
                 </div>
 
                 <div class="d-flex justify-content-center gap-3">
-                    <a class="btn btn-primary" href="/ofertasNew">
-                        <i class="bi bi-plus-circle"></i> Crear
+                    <a class="btn btn-primary">
+                        <router-link class="dropdown-item" to="/ofertasNew">Crear</router-link>
                     </a>
                     <a class="btn btn-outline-primary" href="/ofertasList">
                         <i class="bi bi-eye"></i> Ver

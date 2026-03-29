@@ -21,16 +21,19 @@ export default {
   name: "SelectActividades",
   data() {
       return {
-        actividad: {},
-        actividades: ([]),
+        actividad: "",
+        actividades: ([])
       }
   },
   methods: {
       obtenerActividades(){
         const authStore = useAuthStore()
         const API_URL = authStore.baseUrl
-        const token = authStore.token
-        axios.get(API_URL + 'actividad/find', token)
+        axios.get(API_URL + 'actividad/get', {
+          headers: {
+            'Authorization': 'Bearer ' + authStore.token
+          }
+        })
         .then(response => {
             let res = response.data;
             if(res.code == 200){

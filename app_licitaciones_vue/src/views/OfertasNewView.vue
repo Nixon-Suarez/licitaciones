@@ -10,73 +10,82 @@
       </li>
     </ul>
 
-    <div class="tab-content">
-      <!-- TAB PRESUPUESTO -->
-      
-
+    <form @submit.prevent="guardarOferta">
+      <div class="tab-content">
+        <!-- TAB PRESUPUESTO -->
+        <PresupuestoTab/>
         <!-- TAB FECHAS -->
-        <div
-            class="tab-pane fade"
-            id="fechas"
-            role="tabpanel"
-        >
-            <div class="card shadow-sm mt-3">
-                <div class="card-header bg-secondary text-white">
-                    Periodo de Ejecución
-                </div>
-                <div class="card-body">
-                    <form
-                        class="needs-validation FormularioAjax"
-                        action="<?php echo APP_URL?>app/ajax/FunctionAjax.php"
-                        method="POST"
-                        autocomplete="off"
-                        id="formFechas"
-                        novalidate
-                    >
-                        <div class="row g-3">
+        <FechasTab/>
+      </div>
 
-                            <!-- Fecha inicio -->
-                            <div class="col-md-6">
-                                <label for="fecha_inicio" class="form-label">Fecha de inicio</label>
-                                <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
-                            </div>
-
-                            <!-- Hora inicio -->
-                            <div class="col-md-6">
-                                <label for="hora_inicio" class="form-label">Hora de inicio</label>
-                                <input type="time" class="form-control" id="hora_inicio" name="hora_inicio" required>
-                            </div>
-
-                            <!-- Fecha cierre -->
-                            <div class="col-md-6">
-                                <label for="fecha_cierre" class="form-label">Fecha de cierre</label>
-                                <input type="date" class="form-control" id="fecha_cierre" name="fecha_cierre" required>
-                            </div>
-
-                            <!-- Hora cierre -->
-                            <div class="col-md-6">
-                                <label for="hora_cierre" class="form-label">Hora de cierre</label>
-                                <input type="time" class="form-control" id="hora_cierre" name="hora_cierre" required>
-                            </div>
-
-                        </div>
-
-                        <hr class="my-4">
-                    </form>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- BOTÓN -->
-    <div class="mb-3 mt-2 d-flex justify-content-center">
-        <button id="btnGuardarTodo" class="btn btn-success">
-            Guardar todo
-        </button>
-    </div>
+      <!-- BOTÓN -->
+      <div class="mb-3 mt-2 d-flex justify-content-center">
+          <button type="submit" id="btnGuardarTodo" class="btn btn-success">
+              Guardar todo
+          </button>
+      </div>
+    </form>
 </div>
 </template>
 
 <script>
+import PresupuestoTab from "@/components/Ofertas/PresupuestoTab.vue";
+import FechasTab from "@/components/Ofertas/FechasTab.vue";
+import axios from 'axios';
+import { useAuthStore } from '@/stores/authStore'
+import { alertas_ajax } from '@/stores/alertStore'
+export default {
+  name: "OfertasNewView",
+  data() {
+    return {
+      data_ofertas: {
+        oferta_id: '',
+        objeto: '',
+        descripcion: '',
+        moneda: '',
+        presupuesto: null,
+        actividad: "",
+        fecha_inicio: "",
+        hora_inicio: "",
+        fecha_cierre: "",
+        hora_cierre: ""
+      }
+    }
+  },
+  components: {
+    PresupuestoTab,
+    FechasTab
+  },
+  methods: {
+    guardarOferta(){
+      const authStore = useAuthStore()
+      const API_URL = authStore.baseUrl
+      axios.post(API_URL + 'oferta/insert', this.data_ofertas, {
+        headers: {
+          'Authorization': 'Bearer ' + authStore.token
+        }
+      })
+      .then(response => {
+          if(response.data.code == 200){
+              this.$router.push('/ofertasList');
+              return alertas_ajax({
+                  tipo: 'simple',
+                  icono: 'success',
+                  titulo: 'Éxito',
+                  texto: response.data.message,
+              })
+          }
+      })
+      .catch(function(error){
+        console.error("Error en la solicitud:", error);
+        return alertas_ajax({
+            tipo: 'simple',
+            icono: 'error',
+            titulo: 'Error',
+            texto: "Ocurrió un error en el servidor",
+        })
+      })
+    }
+  }
+}
 </script>
