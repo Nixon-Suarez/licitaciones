@@ -132,7 +132,10 @@ class ofertaController extends Controller
             $nueva_oferta = Oferta::create($datos_oferta_reg);
             if ($nueva_oferta) {
                 http_response_code(201);
-                echo json_encode(["code" => 201, "data" => "La oferta ha sido creada exitosamente"]);
+                echo json_encode([
+                    "code" => 201, 
+                    "data" => "La oferta ha sido creada exitosamente"
+                ]);
             }
             else {
                 http_response_code(400);

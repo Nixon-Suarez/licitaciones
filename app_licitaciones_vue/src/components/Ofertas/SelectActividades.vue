@@ -1,10 +1,9 @@
 <template>
   <div class="mb-4">
       <label for="actividad" class="form-label">Actividad</label>
-      <!-- Lo mejor es hacer una modal ya que son 4mil actividades 😑 -->
-      <select class="form-select" v-model="actividad" name="actividad" required>
+      <select class="form-select" v-model="actividad_selec" name="actividad" required>
           <option value="">Seleccione una actividad</option>
-          <option v-for="actividad in actividades" :key="actividad.id">{{ actividad.producto }}</option>
+          <option v-for="actividad in actividades" :key="actividad.id" :value="actividad.id">{{ actividad.producto }}</option>
       </select>
       <div class="invalid-feedback">
           Debe seleccionar una actividad.
@@ -19,11 +18,25 @@ import { alertas_ajax } from '@/stores/alertStore'
 
 export default {
   name: "SelectActividades",
+  props: {
+    data_ofertas: {
+      type: Object,
+      required: true
+    }
+  },
+  emits: ['update:data_ofertas'],
   data() {
-      return {
-        actividad: "",
-        actividades: ([])
-      }
+    return {
+      modulo_ofertas: 'registrar_oferta',
+      actividad: "",
+      actividades: ([])
+    }
+  },
+  computed: {
+    actividad_selec: {
+      get() { return this.data_ofertas.actividad},
+      set(val) { this.$emit('update:data_ofertas', { actividad: val }) }
+    },
   },
   methods: {
       obtenerActividades(){
@@ -35,29 +48,31 @@ export default {
           }
         })
         .then(response => {
-            let res = response.data;
-            if(res.code == 200){
-                this.actividades = res.data;
+            if(response.data.code == 200){
+                this.actividades = response.data.data;
                 console.log(this.actividades);
-            }else{
-                return alertas_ajax({
-                    tipo: 'simple',
-                    icono: 'error',
-                    titulo: 'Error',
-                    texto: res.data,
-                })
             }
         })
-        .catch(function(error){
+        .catch((error) => {
           console.error("Error en la solicitud:", error);
-          return alertas_ajax({
-              tipo: 'simple',
-              icono: 'error',
-              titulo: 'Error',
-              texto: "Ocurrió un error en el servidor",
-          })
+          this.alertaEstado = true;
+          if(error.response.status === 404){
+              return alertas_ajax({
+                  tipo: 'simple',
+                  icono: 'error',
+                  titulo: 'Error',
+                  texto: error.response.data.data,
+              });
+          }else{
+              return alertas_ajax({
+                  tipo: 'simple',
+                  icono: 'error',
+                  titulo: 'Error',
+                  texto: "Ocurrió un error en el servidor",
+              });
+          }
         })
-    }
+      }
   },
   created(){
     this.obtenerActividades();

@@ -34,16 +34,35 @@
 </template>
 <script>
 export default {
-  name: "PresupuestoTab",
+  name: "FechasTab",
+  props: {
+    data_ofertas: {
+      type: Object,
+      required: true
+    }
+  },
+  emits: ['update:data_ofertas'],
   data() {
     return {
-      modulo_ofertas: 'registrar_oferta',
-      data_ofertas: {
-        fecha_inicio: "",
-        hora_inicio: "",
-        fecha_cierre: "",
-        hora_cierre: ""
-      }
+      modulo_ofertas: 'registrar_oferta'
+    }
+  },
+  computed: {
+    fecha_inicio: {
+      get() { return this.data_ofertas.fecha_inicio },
+      set(val) { this.$emit('update:data_ofertas', { fecha_inicio: val }) }
+    },
+    hora_inicio: {
+      get() { return this.data_ofertas.hora_inicio },
+      set(val) { this.$emit('update:data_ofertas', { hora_inicio: val }) }
+    },
+    fecha_cierre: {
+      get() { return this.data_ofertas.fecha_cierre },
+      set(val) { this.$emit('update:data_ofertas', { fecha_cierre: val }) }
+    },
+    hora_cierre: {
+      get() { return this.data_ofertas.hora_cierre },
+      set(val) { this.$emit('update:data_ofertas', { hora_cierre: val }) }
     }
   }
 }

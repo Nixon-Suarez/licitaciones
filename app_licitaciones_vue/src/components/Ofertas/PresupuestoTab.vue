@@ -62,7 +62,7 @@
           </div>
         </div>
         <!-- Actividad -->
-        <SelectActividades/>
+        <SelectActividades :data_ofertas="data_ofertas" @update:data_ofertas="$emit('update:data_ofertas', $event)"/>
       </div>
     </div>
   </div>
@@ -75,20 +75,45 @@ export default {
   components: {
     SelectActividades
   },
+  props: {
+    data_ofertas: {
+      type: Object,
+      required: true
+    }
+  },
+  emits: ['update:data_ofertas'],
   data() {
       return {
         modulo_ofertas: 'registrar_oferta',
-        data_ofertas: {
-          oferta_id: '',
-          objeto: '',
-          descripcion: '',
-          moneda: '',
-          presupuesto: null,
-          actividad: "",
-        },
         presupuesto_invalido: false,
         moneda_invalida: false
       }
+  },
+  computed: {
+    objeto: {
+      get() { return this.data_ofertas.objeto },
+      set(val) { this.$emit('update:data_ofertas', { objeto: val }) }
+    },
+    descripcion: {
+      get() { return this.data_ofertas.descripcion },
+      set(val) { this.$emit('update:data_ofertas', { descripcion: val }) }
+    },
+    moneda: {
+      get() { return this.data_ofertas.moneda },
+      set(val) { this.$emit('update:data_ofertas', { moneda: val }) }
+    },
+    presupuesto: {
+      get() { return this.data_ofertas.presupuesto },
+      set(val) { this.$emit('update:data_ofertas', { presupuesto: val }) }
+    },
+    oferta_id: {
+      get() { return this.data_ofertas.oferta_id },
+      set(val) { this.$emit('update:data_ofertas', { oferta_id: val }) }
+    },
+    actividad: {
+      get() { return this.data_ofertas.actividad },
+      set(val) { this.$emit('update:data_ofertas', { actividad: val }) }
+    }
   }
 }
 </script>

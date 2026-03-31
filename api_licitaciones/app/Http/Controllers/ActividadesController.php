@@ -19,9 +19,9 @@ class ActividadesController extends Controller
             }
             $actividad = Actividad::select('id', 'producto')->find($id);
             if (!$actividad) {
-                http_response_code(400);
+                http_response_code(404);
                 echo json_encode([
-                    "code" => 400,
+                    "code" => 404,
                     "data" => "La actividad no existe"
                 ]);
                 return;

@@ -13,9 +13,9 @@
     <form @submit.prevent="guardarOferta">
       <div class="tab-content">
         <!-- TAB PRESUPUESTO -->
-        <PresupuestoTab/>
+        <PresupuestoTab :data_ofertas="data_ofertas" @update:data_ofertas="actualizarDatos"/>
         <!-- TAB FECHAS -->
-        <FechasTab/>
+        <FechasTab :data_ofertas="data_ofertas" @update:data_ofertas="actualizarDatos"/>
       </div>
 
       <!-- BOTÓN -->
@@ -57,6 +57,10 @@ export default {
     FechasTab
   },
   methods: {
+    actualizarDatos(datosActualizados) {
+      // Sincronizar los datos del padre con los datos actualizados del hijo
+      this.data_ofertas = { ...this.data_ofertas, ...datosActualizados }
+    },
     guardarOferta(){
       const authStore = useAuthStore()
       const API_URL = authStore.baseUrl
@@ -66,24 +70,34 @@ export default {
         }
       })
       .then(response => {
-          if(response.data.code == 200){
+          if(response.data.code == 201){
               this.$router.push('/ofertasList');
               return alertas_ajax({
                   tipo: 'simple',
                   icono: 'success',
                   titulo: 'Éxito',
-                  texto: response.data.message,
+                  texto: response.data.data,
               })
           }
       })
-      .catch(function(error){
+      .catch((error) => {
         console.error("Error en la solicitud:", error);
-        return alertas_ajax({
-            tipo: 'simple',
-            icono: 'error',
-            titulo: 'Error',
-            texto: "Ocurrió un error en el servidor",
-        })
+        this.alertaEstado = true;
+        if(error.response.status === 400){
+            return alertas_ajax({
+                tipo: 'simple',
+                icono: 'error',
+                titulo: 'Error',
+                texto: error.response.data.data,
+            });
+        }else{
+            return alertas_ajax({
+                tipo: 'simple',
+                icono: 'error',
+                titulo: 'Error',
+                texto: "Ocurrió un error en el servidor",
+            });
+        }
       })
     }
   }
