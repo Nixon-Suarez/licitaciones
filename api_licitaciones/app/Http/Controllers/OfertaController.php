@@ -322,7 +322,6 @@ class ofertaController extends Controller
             echo json_encode(["code" => 500, "data" => $e->getMessage()]);
         }
     }
-
     public function getOfertaControlador($id)
     {
         try {
@@ -396,7 +395,25 @@ class ofertaController extends Controller
             $consulta_datos = $query->orderBy('id', 'DESC')
                 ->skip($inicio)
                 ->take($registros)
-                ->get();
+                ->get()
+                ->map(function($oferta) {
+                    return [
+                        'id' => $oferta->id,
+                        'consecutivo' => $oferta->consecutivo,
+                        'objeto' => $oferta->objeto,
+                        'descripcion' => $oferta->descripcion,
+                        'moneda' => $oferta->moneda,
+                        'presupuesto' => $oferta->presupuesto,
+                        'actividad_id' => $oferta->actividad_id,
+                        'fecha_inicio' => $oferta->fecha_inicio->format('Y-m-d'),
+                        'fecha_cierre' => $oferta->fecha_cierre->format('Y-m-d'),
+                        'hora_inicio' => $oferta->hora_inicio,
+                        'hora_cierre' => $oferta->hora_cierre,
+                        'estado' => $oferta->estado,
+                        'creado_en' => $oferta->creado_en,
+                        'actualizado_en' => $oferta->actualizado_en,
+                    ];
+                });
 
             $numeroPaginas = ceil($consulta_total / $registros);
 

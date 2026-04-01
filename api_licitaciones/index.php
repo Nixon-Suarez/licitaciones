@@ -47,33 +47,26 @@ if ($uri == "/" && $method == "GET") {
     exit;
 }
 
-if (preg_match('/\/api\/actividad\/find\/(\d+)/', $uri, $matches) && $method == "GET") {
+if ($uri == '/api/actividad/get' && $method == "GET") {
 
     $auth->verificarToken();
-    $id_actividad = $matches[1];
+
+    // El ID viene en query string, es opcional
+    $id_actividad = isset($_GET['id']) ? $_GET['id'] : null;
 
     $controller = new ActividadesController();
     $controller->getActividades($id_actividad);
     exit;
 }
 
-if ('api/actividad/get' && $method == "GET") {
+if ($uri == '/api/actividad/list' && $method == "GET") {
 
     $auth->verificarToken();
 
-    $controller = new ActividadesController();
-    $controller->getActividades();
-    exit;
-}
-
-if (preg_match('/\/api\/actividad\/list\/(\d+)\/(\d+)\/(\d+)\/(\d+)/', $uri, $matches) && $method == "GET") {
-
-    $auth->verificarToken();
-
-    $pagina = $matches[1];
-    $registros = $matches[2];
-    $segmento = $matches[3];
-    $producto = $matches[4];
+    $pagina = $_GET['pagina'] ?? 1;
+    $registros = $_GET['registros'] ?? 10;
+    $segmento = $_GET['segmento'] ?? '';
+    $producto = $_GET['producto'] ?? '';
 
     $controller = new ActividadesController();
     $controller->listarActividadesControlador($pagina, $registros, $segmento, $producto);
@@ -121,10 +114,10 @@ if ($uri == "/api/ofertaDocumento/insert" && $method == "POST") {
     exit;
 }
 
-if (preg_match('/\/api\/ofertaDocumento\/find\/(\d+)/', $uri, $matches) && $method == "GET") {
+if ($uri == '/api/ofertaDocumento/get' && $method == "GET") {
 
     $auth->verificarToken();
-    $id_documento = $matches[1];
+    $id_documento = $_GET['id'] ?? null;
 
     $controller = new ofertaDocumentController();
     $controller->getOfertaDocumentControlador($id_documento);
@@ -160,17 +153,17 @@ if (preg_match('/\/api\/oferta\/find\/(\d+)/', $uri, $matches) && $method == "GE
     exit;
 }
 
-if (preg_match('/\/api\/oferta\/list\/(\d+)\/(\d+)\/(\d+)\/(\d+)/', $uri, $matches) && $method == "GET") {
+if ($uri == '/api/oferta/list' && $method == "GET") {
 
     $auth->verificarToken();
 
-    $pagina = $matches[1];
-    $registros = $matches[2];
-    $segmento = $matches[3];
-    $producto = $matches[4];
+    $pagina = $_GET['pagina'] ?? 1;
+    $registros = $_GET['registros'] ?? 10;
+    $descripcion = $_GET['descripcion'] ?? '';
+    $consecutivo = $_GET['consecutivo'] ?? '';
 
     $controller = new ofertaController();
-    $controller->listarOfertaControlador($pagina, $registros, $segmento, $producto);
+    $controller->listarOfertaControlador($pagina, $registros, $descripcion, $consecutivo);
     exit;
 }
 

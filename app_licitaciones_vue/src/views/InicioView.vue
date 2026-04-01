@@ -25,8 +25,8 @@
                     <a class="btn btn-primary">
                         <router-link class="dropdown-item" to="/ofertasNew">Crear</router-link>
                     </a>
-                    <a class="btn btn-outline-primary" href="/ofertasList">
-                        <i class="bi bi-eye"></i> Ver
+                    <a class="btn btn-outline-primary">
+                        <router-link class="dropdown-item" to="/ofertasList">Ver</router-link>
                     </a>
                 </div>
             </div>

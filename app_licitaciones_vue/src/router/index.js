@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import InicioView from '../views/InicioView.vue'
 import LoginView from '../views/LoginView.vue'
 import OfertasNewView from '../views/OfertasNewView.vue'
+import OfertasListView from '../views/OfertasListView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,7 +25,12 @@ const router = createRouter({
     {
       path: '/ofertasList',
       name: 'ofertasList',
-      component: 234
+      component: OfertasListView
+    },
+    {
+      path: '/ofertasDetalle',
+      name: 'ofertasDetalle',
+      component: 23423
     },
     {
       path: '/actividadList',
