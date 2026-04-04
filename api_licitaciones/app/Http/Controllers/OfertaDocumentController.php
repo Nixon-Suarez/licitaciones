@@ -184,7 +184,12 @@ class ofertaDocumentController extends Controller
             $oferta_docs = OfertaDocumento::where("licitacion_id", $id_of)->get();
             // si no hay documentos, devolver un arreglo vacío (para que `empty()` funcione en las vistas)
             if ($oferta_docs->isEmpty()) {
-                return [];
+                http_response_code(204);
+                echo json_encode([
+                    "code" => 204,
+                    "data" => 'oferta sin documentos'
+                ]);
+                return;
             }
 
             $mapped = $oferta_docs->map(function ($doc) {
@@ -196,7 +201,12 @@ class ofertaDocumentController extends Controller
                 'archivo' => $doc->archivo,
                 ];
             });
-            return $mapped->all();
+            http_response_code(200);
+            echo json_encode([
+                "code" => 200,
+                "data" => $mapped->all()
+            ]);
+            return;
         }
         catch (\Exception $e) {
             error_log("Error en getOfertaControlador: " . $e->getMessage());

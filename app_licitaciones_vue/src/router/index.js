@@ -34,6 +34,11 @@ const router = createRouter({
       component: OfertasDetalleView
     },
     {
+      path: '/ofertasEditar/:id',
+      name: 'ofertasEditar',
+      component: OfertasNewView
+    },
+    {
       path: '/actividadList',
       name: 'actividadList',
       component: 234

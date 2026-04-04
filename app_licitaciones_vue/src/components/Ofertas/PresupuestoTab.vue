@@ -79,7 +79,7 @@ export default {
     data_ofertas: {
       type: Object,
       required: true
-    }
+    },
   },
   emits: ['update:data_ofertas'],
   data() {

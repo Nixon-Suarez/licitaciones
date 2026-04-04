@@ -1,5 +1,6 @@
 <template>
   <div class="content p-4">
+    <h2 class="mb-4">{{ isEditing ? 'Editar Oferta' : 'Nueva Oferta' }}</h2>
     <!-- NAV TABS -->
     <ul class="nav nav-tabs mb-3">
       <li class="nav-item" role="presentation">
@@ -21,7 +22,7 @@
       <!-- BOTÓN -->
       <div class="mb-3 mt-2 d-flex justify-content-center">
           <button type="submit" id="btnGuardarTodo" class="btn btn-success">
-              Guardar todo
+              {{ isEditing ? 'Actualizar' : 'Guardar' }}
           </button>
       </div>
     </form>
@@ -38,13 +39,15 @@ export default {
   name: "OfertasNewView",
   data() {
     return {
+      isEditing: false,
+      ofertaId: null,
       data_ofertas: {
-        oferta_id: '',
+        id: null,
         objeto: '',
         descripcion: '',
         moneda: '',
         presupuesto: null,
-        actividad: "",
+        actividad_id: "",
         fecha_inicio: "",
         hora_inicio: "",
         fecha_cierre: "",
@@ -61,29 +64,22 @@ export default {
       // Sincronizar los datos del padre con los datos actualizados del hijo
       this.data_ofertas = { ...this.data_ofertas, ...datosActualizados }
     },
-    guardarOferta(){
+    cargarOferta(){
       const authStore = useAuthStore()
       const API_URL = authStore.baseUrl
-      axios.post(API_URL + 'oferta/insert', this.data_ofertas, {
+      axios.get(API_URL + 'oferta/find/' + this.ofertaId, {
         headers: {
           'Authorization': 'Bearer ' + authStore.token
         }
       })
       .then(response => {
-          if(response.data.code == 201){
-              this.$router.push('/ofertasList');
-              return alertas_ajax({
-                  tipo: 'simple',
-                  icono: 'success',
-                  titulo: 'Éxito',
-                  texto: response.data.data,
-              })
+          if(response.data.code == 200){
+              this.data_ofertas = response.data.data;
           }
       })
       .catch((error) => {
         console.error("Error en la solicitud:", error);
-        this.alertaEstado = true;
-        if(error.response.status === 400){
+        if(error.response && error.response.status === 404){
             return alertas_ajax({
                 tipo: 'simple',
                 icono: 'error',
@@ -99,6 +95,54 @@ export default {
             });
         }
       })
+    },
+    guardarOferta(){
+      const authStore = useAuthStore()
+      const API_URL = authStore.baseUrl
+      const method = this.isEditing ? 'put' : 'post'
+      const url = this.isEditing ? API_URL + 'oferta/update' : API_URL + 'oferta/insert'
+      axios[method](url, this.data_ofertas, {
+        headers: {
+          'Authorization': 'Bearer ' + authStore.token
+        }
+      })
+      .then(response => {
+          if(response.data.code == (this.isEditing ? 200 : 201)){
+              this.$router.push('/ofertasList');
+              return alertas_ajax({
+                  tipo: 'simple',
+                  icono: 'success',
+                  titulo: 'Éxito',
+                  texto: response.data.data,
+              })
+          }
+      })
+      .catch((error) => {
+        console.error("Error en la solicitud:", error);
+        this.alertaEstado = true;
+        if(error.response && error.response.status === 400){
+            return alertas_ajax({
+                tipo: 'simple',
+                icono: 'error',
+                titulo: 'Error',
+                texto: error.response.data.data,
+            });
+        }else{
+            return alertas_ajax({
+                tipo: 'simple',
+                icono: 'error',
+                titulo: 'Error',
+                texto: "Ocurrió un error en el servidor",
+            });
+        }
+      })
+    }
+  },
+  created() {
+    this.ofertaId = this.$route.params.id;
+    if (this.ofertaId) {
+      this.isEditing = true;
+      this.cargarOferta();
     }
   }
 }

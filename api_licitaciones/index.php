@@ -51,7 +51,6 @@ if ($uri == '/api/actividad/get' && $method == "GET") {
 
     $auth->verificarToken();
 
-    // El ID viene en query string, es opcional
     $id_actividad = isset($_GET['id']) ? $_GET['id'] : null;
 
     $controller = new ActividadesController();

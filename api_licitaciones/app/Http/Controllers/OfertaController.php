@@ -15,7 +15,7 @@ class ofertaController extends Controller
             $descripcion = trim($this->limpiarCadena($input['descripcion'] ?? ''));
             $moneda = trim($this->limpiarCadena($input['moneda'] ?? ''));
             $presupuesto = trim($this->limpiarCadena($input['presupuesto'] ?? ''));
-            $actividad = trim($this->limpiarCadena($input['actividad'] ?? ''));
+            $actividad = trim($this->limpiarCadena($input['actividad_id'] ?? ''));
             $fecha_inicio = trim($this->limpiarCadena($input['fecha_inicio'] ?? ''));
             $fecha_fin = trim($this->limpiarCadena($input['fecha_cierre'] ?? ''));
             $hora_inicio = trim($this->limpiarCadena($input['hora_inicio'] ?? ''));
@@ -82,8 +82,8 @@ class ofertaController extends Controller
                 return;
             }
             if (
-            $this->verificarDatos('([01]\d|2[0-3]):[0-5]\d', $hora_inicio) ||
-            $this->verificarDatos('([01]\d|2[0-3]):[0-5]\d', $hora_fin)
+            $this->verificarDatos('([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?', $hora_inicio) ||
+            $this->verificarDatos('([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?', $hora_fin)
             ) {
                 http_response_code(400);
                 echo json_encode([
@@ -181,16 +181,16 @@ class ofertaController extends Controller
         try {
             $input = json_decode(file_get_contents("php://input"), true);
 
-            $id = trim($this->limpiarCadena($input['oferta_id'] ?? ''));
+            $id = trim($this->limpiarCadena($input['id'] ?? ''));
             $objeto = trim($this->limpiarCadena($input['objeto'] ?? ''));
             $descripcion = trim($this->limpiarCadena($input['descripcion'] ?? ''));
             $moneda = trim($this->limpiarCadena($input['moneda'] ?? ''));
             $presupuesto = trim($this->limpiarCadena($input['presupuesto'] ?? ''));
-            $actividad = trim($this->limpiarCadena($input['actividad'] ?? ''));
+            $actividad = trim($this->limpiarCadena($input['actividad_id'] ?? ''));
             $fecha_inicio = trim($this->limpiarCadena($input['fecha_inicio'] ?? ''));
             $fecha_fin = trim($this->limpiarCadena($input['fecha_cierre'] ?? ''));
-            $hora_inicio = trim($this->limpiarCadena($input['hora_inicio'] ?? ''));
-            $hora_fin = trim($this->limpiarCadena($input['hora_cierre'] ?? ''));
+            $hora_inicio = trim($this->limpiarCadena(substr($input['hora_inicio'], 0, 5) ?? ''));
+            $hora_fin = trim($this->limpiarCadena(substr($input['hora_cierre'], 0, 5) ?? ''));
 
             // verificar campos obligatorios
             $campos = [
@@ -253,8 +253,8 @@ class ofertaController extends Controller
                 return;
             }
             if (
-            $this->verificarDatos('([01]\d|2[0-3]):[0-5]\d', $hora_inicio) ||
-            $this->verificarDatos('([01]\d|2[0-3]):[0-5]\d', $hora_fin)
+            $this->verificarDatos('([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?', $hora_inicio) ||
+            $this->verificarDatos('([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?', $hora_fin)
             ) {
                 http_response_code(400);
                 echo json_encode([
@@ -262,7 +262,6 @@ class ofertaController extends Controller
                     "data" => "Formato de hora inválido"
                 ]);
                 return;
-
             }
             $inicio = new \DateTime("$fecha_inicio $hora_inicio");
             $fin = new \DateTime("$fecha_fin $hora_fin");
@@ -353,9 +352,9 @@ class ofertaController extends Controller
                     'moneda' => $oferta->moneda,
                     'presupuesto' => $oferta->presupuesto,
                     'actividad_id' => $oferta->actividad_id,
-                    'fecha_inicio' => $oferta->fecha_inicio,
+                    'fecha_inicio' => $oferta->fecha_inicio->format('Y-m-d'),
                     'hora_inicio' => $oferta->hora_inicio,
-                    'fecha_cierre' => $oferta->fecha_cierre,
+                    'fecha_cierre' => $oferta->fecha_cierre->format('Y-m-d'),
                     'hora_cierre' => $oferta->hora_cierre
                 ]
             ]);
