@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\OfertaDocumento; 
+use App\Models\OfertaDocumento;
+use Illuminate\Support\Composer;
 
 class ofertaDocumentController extends Controller
 {
     public function crearOfertaDocumentControlador()
     {   
         try{
-            $input = json_decode(file_get_contents("php://input"), true);
-            $descripcion = trim($this->limpiarCadena($input['descripcion_Adjunto'] ?? ''));
-            $titulo = trim($this->limpiarCadena($input['titulo_adjunto'] ?? ''));
-            $id_oferta = trim($this->limpiarCadena($input['oferta_id'] ?? ''));
+            $descripcion = trim($this->limpiarCadena($_POST['descripcion'] ?? ''));
+            $titulo = trim($this->limpiarCadena($_POST['titulo'] ?? ''));
+            $id_oferta = trim($this->limpiarCadena($_POST['licitacion_id'] ?? ''));
 
             // verificar campos obligatorios
             $campos = [
                 $titulo,
-                $descripcion
+                $descripcion,
+                $id_oferta
             ];
             if (in_array("", $campos, true)) {
                 http_response_code(400);
@@ -52,12 +53,12 @@ class ofertaDocumentController extends Controller
                 ]);
                 return;
             }
-            $doc_dir = "../views/docs/uploads/ofertas/";
-            $document_name = $_FILES['gasto_documento']['name'];
-            if ($document_name != "" && $_FILES['gasto_documento']['size'] > 0) {
+            $doc_dir = "public/documentos_ofertas/";
+            $document_name = $_FILES['archivo_oferta']['name'] ?? '';
+            if ($document_name != "" && $_FILES['archivo_oferta']['size'] > 0) {
                 //  creando directorio si no existe
                 if (!file_exists($doc_dir)) {
-                    if (!mkdir($doc_dir, 0777)) {
+                    if (!mkdir($doc_dir, 0777, true)) {
                         http_response_code(500);
                         echo json_encode([
                             "code" => 500,
@@ -72,7 +73,7 @@ class ofertaDocumentController extends Controller
                     'application/zip'
                 ];
 
-                $mimeArchivo = mime_content_type($_FILES['gasto_documento']['tmp_name']);
+                $mimeArchivo = mime_content_type($_FILES['archivo_oferta']['tmp_name']);
 
                 if (!in_array($mimeArchivo, $mimePermitidos)) {
                     http_response_code(400);
@@ -83,7 +84,7 @@ class ofertaDocumentController extends Controller
                     return;
                 }
                 # limitar el peso del archivo
-                if (($_FILES['gasto_documento']['size'] / 1024) > 10000) { // 10MB
+                if (($_FILES['archivo_oferta']['size'] / 1024) > 10000) { // 10MB
                     http_response_code(400);
                     echo json_encode([
                         "code" => 400,
@@ -110,7 +111,7 @@ class ofertaDocumentController extends Controller
                 $archivo_ofertas = $nombreLimpio . "_" . rand(1000, 9999) . "_" . time() . $extension;
 
                 // mover el doc al directorio de imagenes
-                if (!move_uploaded_file($_FILES['gasto_documento']['tmp_name'], $doc_dir . $archivo_ofertas)) {
+                if (!move_uploaded_file($_FILES['archivo_oferta']['tmp_name'], $doc_dir . $archivo_ofertas)) {
                     http_response_code(500);
                     echo json_encode([
                         "code" => 500,
@@ -218,10 +219,9 @@ class ofertaDocumentController extends Controller
             return;
         }
     }
-    public function eliminarOfertaDocumentControlador()
+    public function eliminarOfertaDocumentControlador($id_documento)
     {
-        $input = json_decode(file_get_contents("php://input"), true);
-        $id = trim($this->limpiarCadena($input['document_id'] ?? ''));
+        $id = trim($this->limpiarCadena($id_documento ?? ''));
         try {
             if (!is_numeric($id) || $id <= 0) {
                 http_response_code(400);

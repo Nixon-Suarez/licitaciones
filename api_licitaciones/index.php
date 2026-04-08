@@ -129,7 +129,7 @@ if (preg_match('/^\/api\/ofertaDocumento\/delete\/(\d+)$/', $uri, $matches) && $
     $id_documento = $matches[1];
 
     $controller = new ofertaDocumentController();
-    $controller->eliminarOfertaDocumentControlador();
+    $controller->eliminarOfertaDocumentControlador($id_documento);
     exit;
 }
 

@@ -9,6 +9,9 @@
       <li class="nav-item" role="presentation">
           <button class="nav-link" id="fechas-tab" data-bs-toggle="tab" data-bs-target="#fechas" type="button" role="tab">Periodo de ejecución</button>
       </li>
+      <li v-if="isEditing" class="nav-item">
+            <button class="nav-link" id="adjunto-tab" data-bs-toggle="tab" data-bs-target="#adjunto">Documentos </button>
+        </li>
     </ul>
 
     <form @submit.prevent="guardarOferta">
@@ -17,6 +20,8 @@
         <PresupuestoTab :data_ofertas="data_ofertas" @update:data_ofertas="actualizarDatos"/>
         <!-- TAB FECHAS -->
         <FechasTab :data_ofertas="data_ofertas" @update:data_ofertas="actualizarDatos"/>
+        <!-- TAB DOCUMENTOS -->
+        <DocumentosTab :oferta="data_ofertas" v-if="isEditing"/>
       </div>
 
       <!-- BOTÓN -->
@@ -32,6 +37,7 @@
 <script>
 import PresupuestoTab from "@/components/Ofertas/PresupuestoTab.vue";
 import FechasTab from "@/components/Ofertas/FechasTab.vue";
+import DocumentosTab from "@/components/Ofertas/DocumentosTab.vue";
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore'
 import { alertas_ajax } from '@/stores/alertStore'
@@ -57,7 +63,8 @@ export default {
   },
   components: {
     PresupuestoTab,
-    FechasTab
+    FechasTab,
+    DocumentosTab
   },
   methods: {
     actualizarDatos(datosActualizados) {

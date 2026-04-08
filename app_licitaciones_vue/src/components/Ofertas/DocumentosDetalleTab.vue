@@ -5,7 +5,7 @@
             Documentos asociados {{oferta.consecutivo}}
         </div>
         <div class="card-body">
-          <div v-if="documentos" class="row g-3">
+          <div v-if="documentos.length > 0" class="row g-3">
             <div v-for="(documento, index) in documentos" :key="index" class="col-md-12 border rounded p-3">
                 <!-- TÍTULO -->
                 <div class="mb-2">
@@ -58,7 +58,7 @@
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore'
 export default {
-  name: "DocumentosTab",
+  name: "DocumentosDetalleTab",
   props: {
     oferta: {
       type: Object,
@@ -73,6 +73,15 @@ export default {
         }
       },
       immediate: true
+    }
+  },
+  data() {
+    return {
+      modalDocumentos: false,
+      documentos: {},
+      alerta_exitosa: false,
+      alerta_fallido: false,
+      alerta_vacio: false
     }
   },
   methods: {
