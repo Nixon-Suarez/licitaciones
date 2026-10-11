@@ -1,8 +1,10 @@
 <template>
   <!-- Modal Documentos -->
+  <Teleport to="body">
   <div v-if="visible">
     <div class="modal-backdrop fade show" @click="closeModal"></div>
     <div class="modal fade show" id="modalDocumentos" tabindex="-1" aria-labelledby="modalDocumentosLabel" aria-modal="true" role="dialog" style="display: block;">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title" id="modalAdjuntoLabel">Registrar Adjunto</h5>
@@ -42,8 +44,10 @@
           </form>
         </div>
       </div>
+      </div>
     </div>
   </div>
+  </Teleport>
 </template>
 
 <script>

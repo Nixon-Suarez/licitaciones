@@ -2,7 +2,7 @@
     <div class="body-login">
         <div class="login-card">
           <h5 class="text-center text-uppercase mb-4">Iniciar Sesión</h5>
-            <img class="card-img-top mb-3" src="../assets/img/Money.png" height="150" alt="Money">
+            <img class="card-img-top mb-3" src="../assets/img/Lici.png" height="150" alt="Licitaciones">
             <div class="card-body">
                 <h5 class="card-title text-center mb-3">Login</h5>
                 <form @submit.prevent="login">
