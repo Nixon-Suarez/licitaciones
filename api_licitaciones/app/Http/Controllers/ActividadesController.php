@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\models\Actividad;
+use App\models\Oferta;
 
 class ActividadesController extends Controller
 {
@@ -38,6 +39,65 @@ class ActividadesController extends Controller
             echo json_encode([
                 "code" => 500,
                 "data" => "Error: " . $th->getMessage()
+            ]);
+            return;
+        }
+    }
+
+    public function eliminarActividadControlador($id_actividad)
+    {
+        $id = trim($this->limpiarCadena($id_actividad ?? ''));
+        try {
+            if (!is_numeric($id) || $id <= 0) {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => 'ID de actividad no válido'
+                ]);
+                return;
+            }
+            $actividad = Actividad::where("id", $id_actividad)->first();
+            if (!$actividad) {
+                http_response_code(404);
+                echo json_encode([
+                    "code" => 404,
+                    "data" => 'La actividad no existe'
+                ]);
+                return;
+            }
+            $consecutivos = Oferta::where("actividad_id", $actividad->id)
+                ->pluck('consecutivo');
+            if ($consecutivos->isNotEmpty()) {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => 'No se puede eliminar la actividad porque tiene ofertas asociadas con los consecutivos: ' . $consecutivos->implode(', ')
+                ]);
+                return;
+            }
+            $eliminar_actividad = Actividad::destroy($id);
+            if ($eliminar_actividad) {
+                http_response_code(200);
+                echo json_encode([
+                    "code" => 200,
+                    "data" => "La actividad" . $actividad['producto']." ha sido eliminada del sistema correctamente"
+                ]);
+                return;
+            }
+            else {
+                http_response_code(500);
+                echo json_encode([
+                    "code" => 500,
+                    "data" => "No hemos podido eliminar la actividad" . $actividad['producto'] . " del sistema, por favor intente nuevamente"]);
+                return;
+            }
+        }
+        catch (\Exception $e) {
+            error_log("Error en eliminar la actividad: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode([
+                "code" => 500,
+                "data" => 'Error al eliminar el actividad, intente nuevamente' . $e->getMessage()
             ]);
             return;
         }

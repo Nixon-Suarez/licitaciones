@@ -72,6 +72,16 @@ if ($uri == '/api/actividad/list' && $method == "GET") {
     exit;
 }
 
+if (preg_match('/^\/api\/actividad\/delete\/(\d+)$/', $uri, $matches) && $method == "DELETE") {
+
+    $auth->verificarToken();
+    $id_actividad = $matches[1];
+
+    $controller = new ActividadesController();
+    $controller->eliminarActividadControlador($id_actividad);
+    exit;
+}
+
 if ($uri == "/api/user/login" && $method == "POST") {
     $controller = new loginController();
     $controller->iniciarSesionControlador();

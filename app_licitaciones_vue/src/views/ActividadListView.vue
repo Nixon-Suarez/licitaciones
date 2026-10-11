@@ -39,6 +39,7 @@
                       <th>Familia</th>
                       <th>Clase</th>
                       <th>Producto</th>
+                      <th>Acciones</th>
                   </tr>
               </thead>
               <tbody>
@@ -48,6 +49,16 @@
                     <td>{{ actividad.familia}}</td>
                     <td>{{ actividad.clase}}</td>
                     <td>{{ actividad.producto}}</td>
+                    <!-- eliminar -->
+                    <td class="justify-content-center gap-2">
+                      <div type="submit" class="d-flex justify-content-center gap-3">
+                          <form @submit.prevent="eliminarActividad(actividad.id)">
+                              <button type="submit" class="btn btn-danger btn-sm">
+                                  <i class="bi bi-trash"></i> Eliminar
+                              </button>
+                          </form>
+                      </div>
+                    </td>
                 </tr>
                 <tr v-if="Actividades.length === 0" class="text-center">
                     <td colspan="8">
@@ -76,6 +87,7 @@
 
 <script>
 import axios from 'axios';
+import { alertas_ajax } from '@/stores/alertStore';
 import { useAuthStore } from '@/stores/authStore'
 export default {
   name: "ActividadesListView",
@@ -94,6 +106,42 @@ export default {
     }
   },
   methods: {
+    eliminarActividad(actividadId) {
+      const authStore = useAuthStore()
+      const API_URL = authStore.baseUrl
+      axios.delete(API_URL + 'actividad/delete/' + actividadId, {
+        headers: {
+          'Authorization': 'Bearer ' + authStore.token
+        }
+      })
+      .then(response => {
+          if(response.data.code == 200){
+              this.getActividades();
+              this.alerta_exitosa = true
+              setTimeout(() => {
+                this.alerta_exitosa = false
+              }, 3000);
+          }
+      })
+      .catch((error) => {
+        console.error("Error en la solicitud:", error);
+        if(error.response && error.response.status === 400 || error.response.status === 404){
+            return alertas_ajax({
+                tipo: 'simple',
+                icono: 'warning',
+                titulo: 'Error',
+                texto: error.response.data.data,
+            });
+        }else{
+            return alertas_ajax({
+                tipo: 'simple',
+                icono: 'error',
+                titulo: 'Error',
+                texto: "Ocurrió un error en el servidor",
+            });
+        }
+      })
+    },
     getActividades(){
       const authStore = useAuthStore()
       const API_URL = authStore.baseUrl
