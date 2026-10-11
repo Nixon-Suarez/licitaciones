@@ -3,6 +3,14 @@
     <!-- Títulos -->
     <h2 class="text-secondary">Actividades</h2>
     <h5 class="text-secondary mb-4">Lista de Actividades</h5>
+    <!-- Acciones -->
+    <div class="d-flex justify-content-end mb-3">
+      <button type="button" class="btn btn-success rounded-pill" @click="modalCargue = true">
+        <i class="bi bi-upload"></i> Cargue masivo
+      </button>
+    </div>
+    <!-- Modal de cargue masivo -->
+    <ModalCargueMasivoAct :visible="modalCargue" @close="modalCargue = false" @cargado="getActividades" />
     <!-- Formulario de búsqueda -->
     <div class="row">
       <div class="col-md-10 mx-auto">
@@ -89,8 +97,12 @@
 import axios from 'axios';
 import { alertas_ajax } from '@/stores/alertStore';
 import { useAuthStore } from '@/stores/authStore'
+import ModalCargueMasivoAct from '@/components/Actividades/ModalCargueMasivoAct.vue'
 export default {
   name: "ActividadesListView",
+  components: {
+    ModalCargueMasivoAct
+  },
   data() {
     return {
       txt_segmento: '',
@@ -101,6 +113,7 @@ export default {
       pag_inicio : 0,
       consulta_total : 0,
       numero_paginas : 0,
+      modalCargue: false,
       alerta_exitosa: false,
       alerta_fallido: false,
     }

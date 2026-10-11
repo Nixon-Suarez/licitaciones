@@ -1,6 +1,7 @@
 {
     "require": {
-        "illuminate/database": "^10.0"
+        "illuminate/database": "^10.0",
+        "phpoffice/phpspreadsheet": "^5.10"
     },
     "autoload": {
         "psr-4": {

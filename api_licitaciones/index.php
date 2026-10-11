@@ -14,6 +14,8 @@ use App\Http\Controllers\loginController;
 use App\Http\Controllers\ofertaDocumentController;
 use App\Http\Controllers\ofertaController;
 use App\Http\Controllers\userController;
+use App\Http\Controllers\Controller;
+
 
 $method = $_SERVER['REQUEST_METHOD'];
 $requestUri = $_SERVER['REQUEST_URI'];
@@ -29,6 +31,7 @@ $uri = explode('?', $uri)[0];
 
 $auth = new Protection();
 
+$ContladorBase = new Controller(); // Inicializa el controlador base para manejar excepciones y errores 
 
 // Manejo de peticiones OPTIONS (CORS preflight)
 if ($method == "OPTIONS") {
@@ -52,6 +55,7 @@ if ($uri == '/api/actividad/get' && $method == "GET") {
     $auth->verificarToken();
 
     $id_actividad = isset($_GET['id']) ? $_GET['id'] : null;
+    $id_actividad = $ContladorBase->limpiarCadena($id_actividad);
 
     $controller = new ActividadesController();
     $controller->getActividades($id_actividad);
@@ -62,13 +66,40 @@ if ($uri == '/api/actividad/list' && $method == "GET") {
 
     $auth->verificarToken();
 
-    $pagina = $_GET['pagina'] ?? 1;
-    $registros = $_GET['registros'] ?? 10;
-    $segmento = $_GET['segmento'] ?? '';
-    $producto = $_GET['producto'] ?? '';
+    $pagina = $ContladorBase->limpiarCadena($_GET['pagina']) ?? 1;
+    $registros = $ContladorBase->limpiarCadena($_GET['registros']) ?? 10;
+    $segmento = $ContladorBase->limpiarCadena($_GET['segmento']) ?? '';
+    $producto = $ContladorBase->limpiarCadena($_GET['producto']) ?? '';
 
     $controller = new ActividadesController();
     $controller->listarActividadesControlador($pagina, $registros, $segmento, $producto);
+    exit;
+}
+
+if ($uri == "/api/actividad/insert" && $method == "POST") {
+
+    $auth->verificarToken();
+
+    $controller = new ActividadesController();
+    $controller->InsertActividadControlador();
+    exit;
+}
+
+if ($uri == "/api/actividad/masivo" && $method == "POST") {
+
+    $auth->verificarToken();
+
+    $controller = new ActividadesController();
+    $controller->crearActividadMasivoControlador();
+    exit;
+}
+
+if ($uri == "/api/actividad/plantilla" && $method == "GET") {
+
+    $auth->verificarToken();
+
+    $controller = new ActividadesController();
+    $controller->descargarPlantillaControlador();
     exit;
 }
 
@@ -76,6 +107,7 @@ if (preg_match('/^\/api\/actividad\/delete\/(\d+)$/', $uri, $matches) && $method
 
     $auth->verificarToken();
     $id_actividad = $matches[1];
+    $id_actividad = $ContladorBase->limpiarCadena($id_actividad);
 
     $controller = new ActividadesController();
     $controller->eliminarActividadControlador($id_actividad);
@@ -99,6 +131,7 @@ if (preg_match('/^\/api\/user\/delete\/(\d+)$/', $uri, $matches) && $method == "
 
     $auth->verificarToken();
     $id_user = $matches[1];
+    $id_user = $ContladorBase->limpiarCadena($id_user);
 
     $controller = new userController();
     $controller->eliminarUsuarioControlador($id_user);
@@ -127,6 +160,7 @@ if ($uri == '/api/ofertaDocumento/get' && $method == "GET") {
 
     $auth->verificarToken();
     $id_documento = $_GET['id'] ?? null;
+    $id_documento = $ContladorBase->limpiarCadena($id_documento);
 
     $controller = new ofertaDocumentController();
     $controller->getOfertaDocumentControlador($id_documento);
@@ -137,6 +171,7 @@ if (preg_match('/^\/api\/ofertaDocumento\/delete\/(\d+)$/', $uri, $matches) && $
 
     $auth->verificarToken();
     $id_documento = $matches[1];
+    $id_documento = $ContladorBase->limpiarCadena($id_documento);
 
     $controller = new ofertaDocumentController();
     $controller->eliminarOfertaDocumentControlador($id_documento);
@@ -156,6 +191,7 @@ if (preg_match('/\/api\/oferta\/find\/(\d+)/', $uri, $matches) && $method == "GE
 
     $auth->verificarToken();
     $id_oferta = $matches[1];
+    $id_oferta = $ContladorBase->limpiarCadena($id_oferta);
 
     $controller = new ofertaController();
     $controller->getOfertaControlador($id_oferta);
@@ -166,10 +202,10 @@ if ($uri == '/api/oferta/list' && $method == "GET") {
 
     $auth->verificarToken();
 
-    $pagina = $_GET['pagina'] ?? 1;
-    $registros = $_GET['registros'] ?? 10;
-    $descripcion = $_GET['descripcion'] ?? '';
-    $consecutivo = $_GET['consecutivo'] ?? '';
+    $pagina = $ContladorBase->limpiarCadena($_GET['pagina']) ?? 1;
+    $registros = $ContladorBase->limpiarCadena($_GET['registros']) ?? 10;
+    $descripcion = $ContladorBase->limpiarCadena($_GET['descripcion']) ?? '';
+    $consecutivo = $ContladorBase->limpiarCadena($_GET['consecutivo']) ?? '';
 
     $controller = new ofertaController();
     $controller->listarOfertaControlador($pagina, $registros, $descripcion, $consecutivo);

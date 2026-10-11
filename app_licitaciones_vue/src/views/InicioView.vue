@@ -44,6 +44,9 @@
                 </div>
 
                 <div class="d-flex justify-content-center gap-3">
+                    <a class="btn btn-success">
+                        <router-link class="dropdown-item" to="/actividadNew">Crear</router-link>
+                    </a>
                     <a class="btn btn-outline-success">
                         <router-link class="dropdown-item" to="/actividadList">Ver</router-link>
                     </a>
