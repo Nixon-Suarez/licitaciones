@@ -22,7 +22,7 @@
           <div class="col-md-2 d-flex align-items-end">
               <button type="submit" class="btn btn-primary rounded-pill w-100">
                   Buscar
-              </button> 
+              </button>
           </div>
         </form>
       </div>
@@ -54,7 +54,7 @@
                     <td>{{ oferta.fecha_cierre }}</td>
                     <td>{{ oferta.estado}}</td>
                     <!-- ver -->
-                    <td class="d-flex justify-content-center gap-2">
+                    <td class="justify-content-center gap-2">
                       <div type="submit" class="d-flex justify-content-center gap-3">
                           <a class="btn btn-primary">
                             <router-link :to="{ name: 'ofertasDetalle', params: { id: oferta.id } }" class="dropdown-item">Ver</router-link>

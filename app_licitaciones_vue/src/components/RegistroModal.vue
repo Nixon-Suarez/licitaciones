@@ -1,5 +1,6 @@
 <template>
   <!-- Modal de Registro -->
+  <Teleport to="body">
   <div v-if="modalCreateUser">
     <div class="modal-backdrop fade show" @click="closeModal"></div>
     <div class="modal fade show" id="modalRegister" tabindex="-1" aria-labelledby="modalRegisterLabel" aria-modal="true" role="dialog" style="display: block;">
@@ -56,6 +57,7 @@
       </div>
     </div>
   </div>
+  </Teleport>
 </template>
 
 <script>

@@ -10,9 +10,9 @@
           <input type="hidden" name="modulo_ofertas" v-model="modulo_ofertas" value="registrar_oferta">
           <input type="hidden" name="oferta_id" v-model="oferta_id">
           <label for="objeto" class="form-label">Objeto</label>
-          <input type="text" class="form-control contador-texto" v-model="objeto" name="objeto" maxlength="50" required data-contador="contadorObjeto">
-          <div class="form-text">
-              <span id="contadorObjeto">0</span>/150 caracteres
+<input type="text" class="form-control contador-texto" :class="{ 'border-danger': objetoAlLimite }" v-model="objeto" name="objeto" maxlength="150" required data-contador="contadorObjeto">
+          <div class="form-text" :class="{ 'text-danger fw-semibold': objetoAlLimite }">
+              <span id="contadorObjeto">{{ objetoContador }}</span>/150 caracteres
           </div>
           <div class="invalid-feedback">
               El campo Objeto es obligatorio.
@@ -23,6 +23,7 @@
           <label for="descripcion" class="form-label">Descripción / Alcance</label>
           <textarea
               class="form-control contador-texto"
+              :class="{ 'border-danger': descripcionAlLimite }"
               v-model="descripcion"
               name="descripcion"
               rows="4"
@@ -30,8 +31,8 @@
               required
               data-contador="contadorDescripcion"
           ></textarea>
-          <div class="form-text">
-              <span id="contadorDescripcion">0</span>/400 caracteres
+          <div class="form-text" :class="{ 'text-danger fw-semibold': descripcionAlLimite }">
+              <span id="contadorDescripcion">{{ descripcionContador }}</span>/400 caracteres
           </div>
           <div class="invalid-feedback">
               La descripción es obligatoria.
@@ -113,6 +114,18 @@ export default {
     actividad: {
       get() { return this.data_ofertas.actividad },
       set(val) { this.$emit('update:data_ofertas', { actividad: val }) }
+    },
+    objetoContador() {
+      return (this.data_ofertas.objeto || '').length
+    },
+    descripcionContador() {
+      return (this.data_ofertas.descripcion || '').length
+    },
+    objetoAlLimite() {
+      return this.objetoContador >= 150
+    },
+    descripcionAlLimite() {
+      return this.descripcionContador >= 400
     }
   }
 }
