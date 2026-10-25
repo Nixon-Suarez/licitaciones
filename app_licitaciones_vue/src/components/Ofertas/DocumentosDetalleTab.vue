@@ -26,8 +26,9 @@
                     <label class="form-label text-muted mb-0">Archivo</label>
                     <div>
                         <a v-if="documento.archivo != ''"
-                            class="btn btn-outline-primary btn-sm"
-                            download>
+                            :href="obtenerUrlDescarga(documento)"
+                            target="_blank"
+                            class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-download"></i>
                             Descargar archivo
                         </a>
@@ -78,13 +79,22 @@ export default {
   data() {
     return {
       modalDocumentos: false,
-      documentos: {},
+      documentos: [],
       alerta_exitosa: false,
       alerta_fallido: false,
       alerta_vacio: false
     }
   },
   methods: {
+    obtenerUrlDescarga(documento){
+      const authStore = useAuthStore()
+      const base = authStore.baseUrl.replace('api/', '')
+      if (documento.ruta_archivo) {
+        let ruta = documento.ruta_archivo.replace(/^\.\.\//, '').replace(/^\.\//, '')
+        return base + ruta + documento.archivo
+      }
+      return base +  documento.archivo
+    },
     getOfertaDocumentos(){
       const authStore = useAuthStore()
       const API_URL = authStore.baseUrl
@@ -102,7 +112,7 @@ export default {
               }, 3000);
           }
           if(response.data.code == 204){
-              this.documentos = response.data.data
+              this.documentos = []
               this.alerta_vacio = true
               setTimeout(() => {
                 this.alerta_vacio = false

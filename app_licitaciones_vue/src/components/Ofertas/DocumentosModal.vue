@@ -15,15 +15,17 @@
             <input v-model="modulo_ofertas_adjunto" type="hidden" name="modulo_ofertas_adjunto" id="modulo_ofertas_adjunto" value="registrar_adjunto">
             <!-- Título -->
             <div class="mb-3">
-              <label for="titulo_adjunto" class="form-label">Titulo</label>
+              <label for="titulo_adjunto" class="form-label">Título</label>
               <label for="titulo_adjunto" class="form-label asterisco-obligatorio">*</label>
-              <input v-model="documento.titulo" type="text" class="form-control" id="titulo_adjunto" name="titulo_adjunto" required>
+              <input v-model="documento.titulo" type="text" class="form-control" id="titulo_adjunto" name="titulo_adjunto" maxlength="100" required>
+              <small class="text-muted">{{ (documento.titulo || '').length }}/100</small>
             </div>
             <!-- Descripcion -->
             <div class="mb-3">
-              <label for="descripcion_Adjunto" class="form-label">Descripcion Gasto</label>
+              <label for="descripcion_Adjunto" class="form-label">Descripción</label>
               <label for="descripcion_Adjunto" class="form-label asterisco-obligatorio">*</label>
-              <textarea v-model="documento.descripcion" type="text" class="form-control" id="descripcion_Adjunto" name="descripcion_Adjunto" required></textarea>
+              <textarea v-model="documento.descripcion" type="text" class="form-control" id="descripcion_Adjunto" name="descripcion_Adjunto" maxlength="200" required></textarea>
+              <small class="text-muted">{{ (documento.descripcion || '').length }}/200</small>
             </div>
             <!-- Documento -->
             <a id="descargar_gasto" href="" hidden download class="btn btn-success">
@@ -84,10 +86,20 @@ export default {
       const authStore = useAuthStore()
       const API_URL = authStore.baseUrl
 
+      if (!this.documento.titulo || !this.documento.titulo.trim()) {
+        return alertas_ajax({ tipo: 'simple', icono: 'error', titulo: 'Error', texto: 'El título es obligatorio' })
+      }
+      if (!this.documento.descripcion || !this.documento.descripcion.trim()) {
+        return alertas_ajax({ tipo: 'simple', icono: 'error', titulo: 'Error', texto: 'La descripción es obligatoria' })
+      }
+      if (!this.documento.archivo_oferta) {
+        return alertas_ajax({ tipo: 'simple', icono: 'error', titulo: 'Error', texto: 'Debe seleccionar un archivo' })
+      }
+
       const formData = new FormData()
       formData.append('licitacion_id', this.oferta_id)
-      formData.append('titulo', this.documento.titulo)
-      formData.append('descripcion', this.documento.descripcion)
+      formData.append('titulo', this.documento.titulo.trim())
+      formData.append('descripcion', this.documento.descripcion.trim())
       formData.append('archivo_oferta', this.documento.archivo_oferta)
 
       axios.post(API_URL + 'ofertaDocumento/insert', formData, {

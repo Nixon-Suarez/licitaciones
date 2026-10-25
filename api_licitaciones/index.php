@@ -3,10 +3,10 @@ require_once "./config/app.php";
 require_once __DIR__ . "/vendor/autoload.php";
 require_once "./config/database.php";
 
-header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept");
+header("Access-Control-Expose-Headers: Content-Disposition");
 
 use App\Middleware\Protection;
 use App\Http\Controllers\ActividadesController;
@@ -40,7 +40,7 @@ if ($method == "OPTIONS") {
 }
 
 // Debug: Log de la petición
-error_log("Method: $method, URI: $uri");
+// error_log("Method: $method, URI: $uri");
 
 
 // Rutas
@@ -206,9 +206,10 @@ if ($uri == '/api/oferta/list' && $method == "GET") {
     $registros = $ContladorBase->limpiarCadena($_GET['registros']) ?? 10;
     $descripcion = $ContladorBase->limpiarCadena($_GET['descripcion']) ?? '';
     $consecutivo = $ContladorBase->limpiarCadena($_GET['consecutivo']) ?? '';
+    $objeto = $ContladorBase->limpiarCadena($_GET['objeto']) ?? '';
 
     $controller = new ofertaController();
-    $controller->listarOfertaControlador($pagina, $registros, $descripcion, $consecutivo);
+    $controller->listarOfertaControlador($pagina, $registros, $descripcion, $consecutivo, $objeto);
     exit;
 }
 
@@ -218,6 +219,21 @@ if ($uri == "/api/oferta/update" && $method == "PUT") {
 
     $controller = new ofertaController();
     $controller->ActualizarOfertaControlador();
+    exit;
+}
+
+if ($uri == "/api/oferta/excel" && $method == "GET") {
+
+    $auth->verificarToken();
+
+    $pagina = $ContladorBase->limpiarCadena($_GET['pagina'] ?? 1);
+    $registros = $ContladorBase->limpiarCadena($_GET['registros'] ?? 10);
+    $descripcion = $ContladorBase->limpiarCadena($_GET['descripcion'] ?? '');
+    $consecutivo = $ContladorBase->limpiarCadena($_GET['consecutivo'] ?? '');
+    $objeto = $ContladorBase->limpiarCadena($_GET['objeto'] ?? '');
+
+    $controller = new ofertaController();
+    $controller->generarExcelOfertaControlador($pagina, $registros, $descripcion, $consecutivo, $objeto);
     exit;
 }
 

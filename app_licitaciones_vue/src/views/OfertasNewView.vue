@@ -26,7 +26,7 @@
 
       <!-- BOTÓN -->
       <div class="mb-3 mt-2 d-flex justify-content-center">
-          <button type="submit" id="btnGuardarTodo" class="btn btn-success">
+          <button type="submit" id="btnGuardarTodo" class="btn btn-success" :disabled="!formularioValido">
               {{ isEditing ? 'Actualizar' : 'Guardar' }}
           </button>
       </div>
@@ -59,6 +59,27 @@ export default {
         fecha_cierre: "",
         hora_cierre: ""
       }
+    }
+  },
+  computed: {
+    formularioValido(){
+      const d = this.data_ofertas
+      if (!d.objeto || !d.objeto.toString().trim()) return false
+      if (!d.descripcion || !d.descripcion.toString().trim()) return false
+      if (!d.moneda) return false
+      if (d.presupuesto === null || d.presupuesto === '' || isNaN(d.presupuesto) || Number(d.presupuesto) <= 0) return false
+      if (!d.actividad_id) return false
+      if (!d.fecha_inicio || !d.hora_inicio || !d.fecha_cierre || !d.hora_cierre) return false
+      if (String(d.objeto).length > 150) return false
+      if (String(d.descripcion).length > 400) return false
+      try {
+        const inicio = new Date(d.fecha_inicio + 'T' + d.hora_inicio)
+        const fin = new Date(d.fecha_cierre + 'T' + d.hora_cierre)
+        if (fin <= inicio) return false
+      } catch(e) {
+        return false
+      }
+      return true
     }
   },
   components: {

@@ -194,12 +194,22 @@ class ofertaDocumentController extends Controller
             }
 
             $mapped = $oferta_docs->map(function ($doc) {
+                $ruta = $doc->ruta_archivo;
+                if ($ruta && substr($ruta, -1) !== '/') {
+                    $ruta .= '/';
+                }
+                $urlDescarga = 'public/' . ltrim($ruta, './') . $doc->archivo;
+                if (strpos($urlDescarga, 'documentos_ofertas') === false && $ruta) {
+                    $urlDescarga = 'public/documentos_ofertas/' . $doc->archivo;
+                }
                 return [
                 'id' => $doc->id,
                 'licitacion_id' => $doc->licitacion_id,
                 'titulo' => $doc->titulo,
                 'descripcion' => $doc->descripcion,
                 'archivo' => $doc->archivo,
+                'ruta_archivo' => $doc->ruta_archivo,
+                'url_descarga' => $urlDescarga,
                 ];
             });
             http_response_code(200);

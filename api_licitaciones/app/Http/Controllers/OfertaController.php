@@ -167,8 +167,8 @@ class ofertaController extends Controller
             else {
                 $nuevo_numero = 1;
             }
-            // ceros a la izquierda (4 dÃ­gitos)
-            $consecutivo = str_pad($nuevo_numero, 4, '0', STR_PAD_LEFT);
+            // ceros a la izquierda (3 dígitos)
+            $consecutivo = str_pad($nuevo_numero, 3, '0', STR_PAD_LEFT);
 
             $indice_oferta = "PO-$consecutivo-$anio";
             return $indice_oferta;
@@ -284,6 +284,17 @@ class ofertaController extends Controller
                 return;
             }
             $actividad_id = $check_actividad->id;
+
+            $docsCount = \App\Models\OfertaDocumento::where('licitacion_id', $id)->count();
+            if ($docsCount < 1) {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => "En edición, debe existir al menos 1 documento cargado"
+                ]);
+                return;
+            }
+
             $datos_oferta_up = [
                 "objeto" => $objeto,
                 "descripcion" => $descripcion,
@@ -299,7 +310,7 @@ class ofertaController extends Controller
             ];
             $update_oferta = Oferta::where('id', $id)
                 ->update($datos_oferta_up);
-            if ($update_oferta) {
+            if ($update_oferta !== false) {
                 http_response_code(200);
                 echo json_encode([
                     "code" => 200,
@@ -370,13 +381,14 @@ class ofertaController extends Controller
         }
     }
 
-    public function listarOfertaControlador($pagina, $registros, $descripcion, $consecutivo)
+    public function listarOfertaControlador($pagina, $registros, $descripcion, $consecutivo, $objeto = '')
     {
         try {
             $pagina = $this->limpiarCadena($pagina);
             $registros = $this->limpiarCadena($registros);
             $descripcion = $this->limpiarCadena($descripcion);
             $consecutivo = $this->limpiarCadena($consecutivo);
+            $objeto = $this->limpiarCadena($objeto);
             $pagina = (isset($pagina) && $pagina > 0) ? (int)$pagina : 1;
             $inicio = ($pagina > 0) ? (($registros * $pagina) - $registros) : 0;
             $registros = ($registros > 0) ? (int)$registros : 10;
@@ -384,7 +396,13 @@ class ofertaController extends Controller
             $query = Oferta::query();
             // Filtro por búsqueda
             if (!empty($descripcion)) {
-                $query->where("descripcion", 'LIKE', "%$descripcion%");
+                $query->where(function($q) use ($descripcion) {
+                    $q->where("descripcion", 'LIKE', "%$descripcion%")
+                      ->orWhere("objeto", 'LIKE', "%$descripcion%");
+                });
+            }
+            if (!empty($objeto)) {
+                $query->where("objeto", 'LIKE', "%$objeto%");
             }
             if (!empty($consecutivo)) {
                 $query->where("consecutivo", 'LIKE', "%$consecutivo%");
@@ -436,6 +454,82 @@ class ofertaController extends Controller
                 "data" => "Error: " . $e->getMessage()
             ]);
             return;
+        }
+    }
+
+    public function generarExcelOfertaControlador($pagina, $registros, $descripcion, $consecutivo, $objeto = '')
+    {
+        try {
+            while (ob_get_level()) {
+                @ob_end_clean();
+            }
+            require_once __DIR__ . '/../../../vendor/autoload.php';
+            while (ob_get_level()) { @ob_end_clean(); }
+
+            $descripcion = $this->limpiarCadena($descripcion);
+            $consecutivo = $this->limpiarCadena($consecutivo);
+            $objeto = $this->limpiarCadena($objeto);
+
+            $query = Oferta::query();
+            if (!empty($descripcion)) {
+                $query->where(function($q) use ($descripcion) {
+                    $q->where("descripcion", 'LIKE', "%$descripcion%")
+                      ->orWhere("objeto", 'LIKE', "%$descripcion%");
+                });
+            }
+            if (!empty($objeto)) {
+                $query->where("objeto", 'LIKE', "%$objeto%");
+            }
+            if (!empty($consecutivo)) {
+                $query->where("consecutivo", 'LIKE', "%$consecutivo%");
+            }
+
+            $ofertas = $query->orderBy('id', 'DESC')->get();
+
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setTitle('Ofertas');
+
+            $headers = ['Consecutivo', 'Objeto', 'Descripcion', 'Fecha de inicio', 'Fecha de cierre', 'Estado'];
+            $col = 'A';
+            foreach ($headers as $header) {
+                $sheet->setCellValue($col . '1', $header);
+                $sheet->getStyle($col . '1')->getFont()->setBold(true);
+                $col++;
+            }
+
+            $row = 2;
+            foreach ($ofertas as $oferta) {
+                $sheet->setCellValue('A' . $row, $oferta->consecutivo);
+                $sheet->setCellValue('B' . $row, $oferta->objeto);
+                $sheet->setCellValue('C' . $row, $oferta->descripcion);
+                $fini = $oferta->fecha_inicio ? (is_object($oferta->fecha_inicio) ? $oferta->fecha_inicio->format('Y-m-d') : $oferta->fecha_inicio) : '';
+                $fcie = $oferta->fecha_cierre ? (is_object($oferta->fecha_cierre) ? $oferta->fecha_cierre->format('Y-m-d') : $oferta->fecha_cierre) : '';
+                $sheet->setCellValue('D' . $row, $fini);
+                $sheet->setCellValue('E' . $row, $fcie);
+                $sheet->setCellValue('F' . $row, $oferta->estado);
+                $row++;
+            }
+
+            foreach (range('A', 'F') as $c) {
+                $sheet->getColumnDimension($c)->setAutoSize(true);
+            }
+
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            header_remove('X-Powered-By');
+            if (!headers_sent()) {
+                header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                header('Content-Disposition: attachment; filename="ofertas.xlsx"');
+                header('Cache-Control: no-cache, no-store, must-revalidate');
+                header('Pragma: no-cache');
+                header('Expires: 0');
+            }
+            $writer->save('php://output');
+            exit;
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(["code" => 500, "data" => $e->getMessage()]);
+            exit;
         }
     }
 }

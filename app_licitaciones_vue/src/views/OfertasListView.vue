@@ -6,7 +6,7 @@
     <!-- Formulario de búsqueda -->
     <div class="row">
       <div class="col-md-10 mx-auto">
-        <form @submit.prevent="getOfertas" class="row g-3" >
+        <form @submit.prevent="buscar" class="row g-3" >
           <input type="hidden" name="modulo_url" value="<?php echo $url[0]; ?>">
           <!-- consecutivo -->
           <div class="col-md-5">
@@ -29,6 +29,11 @@
     </div>
     <div>
       <br>
+      <div class="d-flex justify-content-end mb-2">
+        <button @click="exportarExcel" class="btn btn-success rounded-pill">
+          Generar reporte Excel
+        </button>
+      </div>
       <!-- Tabla -->
       <div class="table-responsive mt-3">
           <table class="table table-striped table-hover">
@@ -97,7 +102,7 @@ export default {
       txt_consecutivo: '',
       txt_buscador: '',
       ofertas: [],
-      current_page: 0,
+      current_page: 1,
       registros_por_pagina: 10,
       pag_inicio : 0,
       consulta_total : 0,
@@ -107,29 +112,42 @@ export default {
     }
   },
   methods: {
+    buscar(){
+      this.current_page = 1
+      this.getOfertas()
+    },
     getOfertas(){
       const authStore = useAuthStore()
       const API_URL = authStore.baseUrl
-      axios.get(API_URL + 'oferta/list?' + 'pagina=' + this.current_page + '&registros=' + this.registros_por_pagina + '&consecutivo=' + this.txt_consecutivo + '&descripcion=' + this.txt_buscador, {
+      axios.get(API_URL + 'oferta/list?' + 'pagina=' + this.current_page + '&registros=' + this.registros_por_pagina + '&consecutivo=' + this.txt_consecutivo + '&descripcion=' + this.txt_buscador + '&objeto=' + this.txt_buscador, {
         headers: {
           'Authorization': 'Bearer ' + authStore.token
         }
       })
       .then(response => {
           if(response.data.code == 200){
-              this.ofertas = response.data.data.datos
-              this.consulta_total = response.data.data.total
-              this.numero_paginas = response.data.data.paginas
-              this.current_page = response.data.data.pagina_actual
-              this.pag_inicio = response.data.data.inicio
+              this.ofertas = response.data.data.datos || []
+              this.consulta_total = response.data.data.total || 0
+              this.numero_paginas = response.data.data.paginas || 0
+              this.current_page = response.data.data.pagina_actual || this.current_page
+              this.pag_inicio = response.data.data.inicio || 0
               this.alerta_exitosa = true
               setTimeout(() => {
                 this.alerta_exitosa = false
               }, 3000);
+          } else {
+              this.ofertas = []
+              this.consulta_total = 0
+              this.numero_paginas = 0
+              this.pag_inicio = 0
           }
       })
-      .catch(function(error){
+      .catch((error) => {
           console.error("Error en la solicitud:", error);
+          this.ofertas = []
+          this.consulta_total = 0
+          this.numero_paginas = 0
+          this.pag_inicio = 0
           this.alerta_fallido = true
           setTimeout(() => {
             this.alerta_fallido = false
@@ -147,14 +165,38 @@ export default {
         this.current_page++;
         this.getOfertas();
       }
+    },
+    exportarExcel(){
+      const authStore = useAuthStore()
+      const API_URL = authStore.baseUrl
+      const url = API_URL + 'oferta/excel?consecutivo=' + encodeURIComponent(this.txt_consecutivo) + '&descripcion=' + encodeURIComponent(this.txt_buscador) + '&objeto=' + encodeURIComponent(this.txt_buscador)
+      fetch(url, {
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + authStore.token }
+      })
+      .then(res => res.blob())
+      .then(blob => {
+        const objectUrl = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = objectUrl
+        a.download = 'ofertas.xlsx'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(objectUrl)
+      })
     }
   },
   created(){
+    this.current_page = 1
     this.getOfertas();
   },
   computed: {
     pag_final: {
-      get() { return this.current_page * this.registros_por_pagina}
+      get() {
+        const fin = this.current_page * this.registros_por_pagina
+        return fin > this.consulta_total ? this.consulta_total : fin
+      }
     },
   },
 }

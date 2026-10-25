@@ -26,7 +26,7 @@
                 <div class="mb-2">
                   <label class="form-label text-muted mb-1">Archivo</label>
                       <div v-if="documento.archivo != ''" class="d-flex gap-2 align-items-center flex-wrap">
-                          <a href="" class="btn btn-outline-primary btn-sm" download> <i class="bi bi-download"></i> Descargar </a>
+                          <a :href="obtenerUrlDescarga(documento)" target="_blank" class="btn btn-outline-primary btn-sm"> <i class="bi bi-download"></i> Descargar </a>
                           <form @submit.prevent="eliminarDocumento(documento.id)">
                               <button type="submit" class="btn btn-outline-danger btn-sm">
                                   <i class="bi bi-trash"></i> Eliminar
@@ -86,6 +86,15 @@ export default {
     }
   },
   methods: {
+    obtenerUrlDescarga(documento){
+      const authStore = useAuthStore()
+      const base = authStore.baseUrl.replace('api/', '')
+      if (documento.ruta_archivo) {
+        let ruta = documento.ruta_archivo.replace(/^\.\.\//, '').replace(/^\.\//, '')
+        return base + ruta + documento.archivo
+      }
+      return base +  documento.archivo
+    },
     getOfertaDocumentos(){
       const authStore = useAuthStore()
       const API_URL = authStore.baseUrl
