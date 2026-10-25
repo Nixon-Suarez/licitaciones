@@ -62,6 +62,15 @@ if ($uri == '/api/actividad/get' && $method == "GET") {
     exit;
 }
 
+if ($uri == "/api/actividad/update" && $method == "PUT") {
+
+    $auth->verificarToken();
+
+    $controller = new ActividadesController();
+    $controller->ActualizarActividadControlador();
+    exit;
+}
+
 if ($uri == '/api/actividad/list' && $method == "GET") {
 
     $auth->verificarToken();

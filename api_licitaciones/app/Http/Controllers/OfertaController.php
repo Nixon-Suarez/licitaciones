@@ -395,14 +395,11 @@ class ofertaController extends Controller
             // consulta
             $query = Oferta::query();
             // Filtro por búsqueda
-            if (!empty($descripcion)) {
+            if (!empty($descripcion || !empty($objeto))) {
                 $query->where(function($q) use ($descripcion) {
                     $q->where("descripcion", 'LIKE', "%$descripcion%")
                       ->orWhere("objeto", 'LIKE', "%$descripcion%");
                 });
-            }
-            if (!empty($objeto)) {
-                $query->where("objeto", 'LIKE', "%$objeto%");
             }
             if (!empty($consecutivo)) {
                 $query->where("consecutivo", 'LIKE', "%$consecutivo%");

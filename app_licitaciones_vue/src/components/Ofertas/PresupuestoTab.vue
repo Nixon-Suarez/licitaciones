@@ -11,7 +11,7 @@
           <input type="hidden" name="oferta_id" v-model="oferta_id">
           <label for="objeto" class="form-label">Objeto</label>
           <label for="titulo_adjunto" class="form-label asterisco-obligatorio">*</label>
-<input type="text" class="form-control contador-texto" :class="{ 'border-danger': objetoAlLimite }" v-model="objeto" name="objeto" maxlength="150" required data-contador="contadorObjeto">
+          <input type="text" class="form-control contador-texto" :class="{ 'border-danger': objetoAlLimite }" v-model="objeto" name="objeto" maxlength="150" required data-contador="contadorObjeto">
           <div class="form-text" :class="{ 'text-danger fw-semibold': objetoAlLimite }">
               <span id="contadorObjeto">{{ objetoContador }}</span>/150 caracteres
           </div>

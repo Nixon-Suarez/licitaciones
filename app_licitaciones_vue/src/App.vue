@@ -27,6 +27,7 @@
               </a>
               <ul class="dropdown-menu" aria-labelledby="ActividadesDropdown">
                 <li><router-link class="dropdown-item" to="/actividadList">Listado</router-link></li>
+                <li><router-link class="dropdown-item" to="/actividadNew">Nuevo</router-link></li>
               </ul>
             </li>
 

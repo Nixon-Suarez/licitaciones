@@ -23,7 +23,17 @@ class ActividadesController extends Controller
                 ]);
                 return;
             }
-            $actividad = Actividad::select('id', 'producto')->find($id);
+            $actividad = Actividad::select(
+                'id',
+                'codigo_segmento',
+                'segmento',
+                'codigo_familia',
+                'familia',
+                'codigo_clase',
+                'clase',
+                'codigo_producto',
+                'producto'
+            )->find($id);
             if (!$actividad) {
                 http_response_code(404);
                 echo json_encode([
@@ -134,6 +144,86 @@ class ActividadesController extends Controller
         } catch (\Exception $e) {
             http_response_code(500);
             echo json_encode(["code" => 500, "data" => $e->getMessage()]);
+        }
+    }
+
+    public function ActualizarActividadControlador(){
+        try {
+            $input = json_decode(file_get_contents("php://input"), true);
+            $actividad = trim($this->limpiarCadena($input['id_actividad'] ?? ''));
+            $cod_segmento = trim($this->limpiarCadena($input['cod_segmento'] ?? ''));
+            $nom_segmento = trim($this->limpiarCadena($input['nom_segmento'] ?? ''));
+            $cod_familia = trim($this->limpiarCadena($input['cod_familia'] ?? ''));
+            $nom_familia = trim($this->limpiarCadena($input['nom_familia'] ?? ''));
+            $cod_clase = trim($this->limpiarCadena($input['cod_clase'] ?? ''));
+            $nom_clase = trim($this->limpiarCadena($input['nom_clase'] ?? ''));
+            $cod_product = trim($this->limpiarCadena($input['cod_product'] ?? ''));
+            $nom_product = trim($this->limpiarCadena($input['nom_product'] ?? ''));
+
+            // verificar campos obligatorios
+            $camposLet = [
+                $nom_clase,
+                $nom_familia,
+                $nom_segmento,
+                $nom_product
+            ];
+            $camposNum = [
+                $cod_clase,
+                $cod_familia,
+                $cod_segmento,
+                $cod_product
+            ];
+
+            $campos = array_merge($camposLet, $camposNum);
+
+            if (in_array("", $campos, true)) {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => "No has llenado todos los campos obligatorios"
+                ]);
+                return;
+            }
+
+            $datos_actividad_up = [
+                "codigo_segmento" => $cod_segmento,
+                "segmento" => $nom_segmento,
+                "codigo_familia" => $cod_familia,
+                "familia" => $nom_familia,
+                "codigo_clase" => $cod_clase,
+                "clase" => $nom_clase,
+                "codigo_producto" => $cod_product,
+                "producto" => $nom_product
+            ];
+
+            $update_actividad = Actividad::where('id', $actividad)
+                ->update($datos_actividad_up);
+            if ($update_actividad !== false) {
+                http_response_code(200);
+                echo json_encode([
+                    "code" => 200,
+                    "data" => "la actividad " . $actividad . " ha sido actualizada exitosamente"
+                ]);
+                return;
+            }
+            else {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => "No se pudo registrar la actividad, por favor intente nuevamente"
+                ]);
+                return;
+            }
+
+
+        } catch (\Throwable $th) {
+            error_log("Error en crearActividadMasivoControlador: " . $th->getMessage());
+            http_response_code(500);
+            echo json_encode([
+                "code" => 500,
+                "data" => "Error al procesar el cargue masivo, intente nuevamente"
+            ]);
+            return;
         }
     }
 

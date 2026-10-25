@@ -60,6 +60,9 @@
                     <!-- eliminar -->
                     <td class="justify-content-center gap-2">
                       <div type="submit" class="d-flex justify-content-center gap-3">
+                          <router-link :to="`/actividadEditar/${actividad.id}`" class="btn btn-primary btn-sm">
+                              Editar
+                          </router-link>
                           <form @submit.prevent="eliminarActividad(actividad.id)">
                               <button type="submit" class="btn btn-danger btn-sm">
                                   <i class="bi bi-trash"></i> Eliminar

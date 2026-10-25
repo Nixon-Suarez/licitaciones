@@ -5,6 +5,7 @@ import OfertasNewView from '../views/OfertasNewView.vue'
 import OfertasListView from '../views/OfertasListView.vue'
 import OfertasDetalleView from '../views/OfertasDetalleView.vue'
 import ActividadListView from '../views/ActividadListView.vue'
+import ActividadNewView from '../views/ActividadNewView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,7 +44,17 @@ const router = createRouter({
       path: '/actividadList',
       name: 'actividadList',
       component: ActividadListView
-    }
+    },
+    {
+      path: '/actividadNew',
+      name: 'actividadNew',
+      component: ActividadNewView
+    },
+    {
+      path: '/actividadEditar/:id',
+      name: 'actividadEditar',
+      component: ActividadNewView
+    },
   ],
 })
 
