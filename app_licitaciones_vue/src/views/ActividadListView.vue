@@ -3,12 +3,6 @@
     <!-- Títulos -->
     <h2 class="text-secondary">Actividades</h2>
     <h5 class="text-secondary mb-4">Lista de Actividades</h5>
-    <!-- Acciones -->
-    <div class="d-flex justify-content-end mb-3">
-      <button type="button" class="btn btn-success rounded-pill" @click="modalCargue = true">
-        <i class="bi bi-upload"></i> Cargue masivo
-      </button>
-    </div>
     <!-- Modal de cargue masivo -->
     <ModalCargueMasivoAct :visible="modalCargue" @close="modalCargue = false" @cargado="getActividades" />
     <!-- Formulario de búsqueda -->
@@ -35,10 +29,16 @@
         </form>
       </div>
     </div>
+    <!-- Acciones -->
+    <div class="d-flex justify-content-end mt-3 mb-2">
+      <button type="button" class="btn btn-success rounded-pill" @click="modalCargue = true">
+        <i class="bi bi-upload"></i> Cargue masivo
+      </button>
+    </div>
     <div>
       <br>
       <!-- Tabla -->
-      <div class="table-responsive mt-3">
+      <div class="table-responsive mt-1">
           <table class="table table-striped table-hover">
               <thead class="custom-header text-center">
                   <tr>

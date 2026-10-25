@@ -112,6 +112,9 @@ export default {
           if(response.data.code == 200){
               this.$emit('saved')
               this.closeModal()
+              this.documento.titulo = ''
+              this.documento.descripcion = ''
+              this.documento.archivo_oferta = null
               return alertas_ajax({
                   tipo: 'simple',
                   icono: 'success',
