@@ -130,6 +130,7 @@ CREATE TABLE `ofertas_documentos` (
   `titulo` varchar(100) NOT NULL,
   `descripcion` varchar(200) DEFAULT NULL,
   `archivo` varchar(255) NOT NULL,
+  `nombre_original` varchar(255) NOT NULL,
   `ruta_archivo` varchar(255) NOT NULL,
   `creado_en` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -138,10 +139,10 @@ CREATE TABLE `ofertas_documentos` (
 -- Dumping data for table `ofertas_documentos`
 --
 
-INSERT INTO `ofertas_documentos` (`id`, `licitacion_id`, `titulo`, `descripcion`, `archivo`, `ruta_archivo`, `creado_en`) VALUES
-(2, 3, '213', '123', 'Prueba_de_desarrollo_FullStack_2025_7045_1767895588.pdf', '../views/docs/uploads/ofertas/', '2026-01-08 13:06:29'),
-(3, 3, '123213', '213213', 'Prueba_de_desarrollo_FullStack_2025_9041_1767895668.pdf', '../views/docs/uploads/ofertas/', '2026-01-08 13:07:48'),
-(7, 10, '123', '123', 'Prueba_de_desarrollo_FullStack_2025_7551_1769012469.pdf', '../views/docs/uploads/ofertas/', '2026-01-21 11:21:09');
+INSERT INTO `ofertas_documentos` (`id`, `licitacion_id`, `titulo`, `descripcion`, `archivo`, `nombre_original`, `ruta_archivo`, `creado_en`) VALUES
+(2, 3, '213', '123', 'Prueba_de_desarrollo_FullStack_2025_7045_1767895588.pdf', 'Prueba de desarrollo FullStack 2025.pdf', '../views/docs/uploads/ofertas/', '2026-01-08 13:06:29'),
+(3, 3, '123213', '213213', 'Prueba_de_desarrollo_FullStack_2025_9041_1767895668.pdf', 'Prueba de desarrollo FullStack 2025.pdf', '../views/docs/uploads/ofertas/', '2026-01-08 13:07:48'),
+(7, 10, '123', '123', 'Prueba_de_desarrollo_FullStack_2025_7551_1769012469.pdf', 'Prueba de desarrollo FullStack 2025.pdf', '../views/docs/uploads/ofertas/', '2026-01-21 11:21:09');
 
 -- --------------------------------------------------------
 

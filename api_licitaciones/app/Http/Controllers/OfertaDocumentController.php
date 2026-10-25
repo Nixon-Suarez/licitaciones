@@ -133,6 +133,7 @@ class ofertaDocumentController extends Controller
                 "descripcion" => $descripcion,
                 "titulo" => $titulo,
                 "archivo" => $archivo_ofertas,
+                "nombre_original" => $document_name,
                 "ruta_archivo" => $doc_dir,
                 "creado_en" => date("Y-m-d H:i:s")
             ];
@@ -259,7 +260,7 @@ class ofertaDocumentController extends Controller
                 http_response_code(200);
                 echo json_encode([
                     "code" => 200,
-                    "data" => "El archivo " . $oferta_doc['archivo'] . " ha sido eliminado del sistema correctamente"
+                    "data" => "El archivo " . $oferta_doc['nombre_original'] . " ha sido eliminado del sistema correctamente"
                 ]);
                 return;
             }
@@ -267,7 +268,7 @@ class ofertaDocumentController extends Controller
                 http_response_code(500);
                 echo json_encode([
                     "code" => 500,
-                    "data" => "No hemos podido eliminar el archivo " . $oferta_doc['archivo'] . " del sistema, por favor intente nuevamente"
+                    "data" => "No hemos podido eliminar el archivo " . $oferta_doc['nombre_original'] . " del sistema, por favor intente nuevamente"
                 ]);
                 return;
             }

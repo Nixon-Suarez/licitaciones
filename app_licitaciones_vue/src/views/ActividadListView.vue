@@ -87,7 +87,7 @@
     <div v-if="alerta_exitosa" class="alert alert-success" role="alert">
       Consulta realizada con éxito
     </div>
-    <div v-if="alerta_fallido" class="alert alert-error" role="alert">
+    <div v-if="alerta_fallido" class="alert alert-danger" role="alert">
       Consulta fallida, por favor intente nuevamente
     </div>
   </div>

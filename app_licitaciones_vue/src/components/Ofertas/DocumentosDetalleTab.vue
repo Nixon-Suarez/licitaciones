@@ -46,7 +46,7 @@
     <div v-if="alerta_exitosa" class="alert alert-success" role="alert">
       Documentos consultados con éxito
     </div>
-    <div v-if="alerta_fallido" class="alert alert-error" role="alert">
+    <div v-if="alerta_fallido" class="alert alert-danger" role="alert">
       Consulta de documentos fallida, por favor intente nuevamente
     </div>
     <div v-if="alerta_vacio" class="alert alert-warning" role="alert">

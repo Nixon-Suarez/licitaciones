@@ -19,6 +19,7 @@ class OfertaDocumento extends Model
         'titulo',
         'descripcion',
         'archivo',
+        'nombre_original',
         'ruta_archivo',
     ];
 

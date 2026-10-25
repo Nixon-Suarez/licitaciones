@@ -4,24 +4,24 @@
     <!-- NAV TABS -->
     <ul class="nav nav-tabs mb-3">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="presupuesto-tab" data-bs-toggle="tab" data-bs-target="#presupuesto" type="button" role="tab"> Presupuesto </button>
+        <button class="nav-link" :class="{ active: activeTab === 'presupuesto' }" id="presupuesto-tab" type="button" role="tab" @click="activeTab = 'presupuesto'"> Información Básica </button>
       </li>
       <li class="nav-item" role="presentation">
-          <button class="nav-link" id="fechas-tab" data-bs-toggle="tab" data-bs-target="#fechas" type="button" role="tab">Periodo de ejecución</button>
+          <button class="nav-link" :class="{ active: activeTab === 'fechas' }" id="fechas-tab" type="button" role="tab" @click="activeTab = 'fechas'">Cronograma</button>
       </li>
       <li v-if="isEditing" class="nav-item">
-            <button class="nav-link" id="adjunto-tab" data-bs-toggle="tab" data-bs-target="#adjunto">Documentos </button>
+            <button class="nav-link" :class="{ active: activeTab === 'adjunto' }" id="adjunto-tab" type="button" role="tab" @click="activeTab = 'adjunto'">Documentos </button>
         </li>
     </ul>
 
     <form @submit.prevent="guardarOferta">
       <div class="tab-content">
         <!-- TAB PRESUPUESTO -->
-        <PresupuestoTab :data_ofertas="data_ofertas" @update:data_ofertas="actualizarDatos"/>
+        <PresupuestoTab :data_ofertas="data_ofertas" :activo="activeTab === 'presupuesto'" @update:data_ofertas="actualizarDatos"/>
         <!-- TAB FECHAS -->
-        <FechasTab :data_ofertas="data_ofertas" @update:data_ofertas="actualizarDatos"/>
+        <FechasTab :data_ofertas="data_ofertas" :activo="activeTab === 'fechas'" @update:data_ofertas="actualizarDatos"/>
         <!-- TAB DOCUMENTOS -->
-        <DocumentosTab :oferta="data_ofertas" v-if="isEditing"/>
+        <DocumentosTab :oferta="data_ofertas" :activo="activeTab === 'adjunto'" v-if="isEditing"/>
       </div>
 
       <!-- BOTÓN -->
@@ -41,24 +41,33 @@ import DocumentosTab from "@/components/Ofertas/DocumentosTab.vue";
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore'
 import { alertas_ajax } from '@/stores/alertStore'
+
+const datosIniciales = () => ({
+  id: null,
+  objeto: '',
+  descripcion: '',
+  moneda: '',
+  presupuesto: null,
+  actividad_id: "",
+  fecha_inicio: "",
+  hora_inicio: "",
+  fecha_cierre: "",
+  hora_cierre: ""
+});
+
 export default {
   name: "OfertasNewView",
   data() {
     return {
       isEditing: false,
       ofertaId: null,
-      data_ofertas: {
-        id: null,
-        objeto: '',
-        descripcion: '',
-        moneda: '',
-        presupuesto: null,
-        actividad_id: "",
-        fecha_inicio: "",
-        hora_inicio: "",
-        fecha_cierre: "",
-        hora_cierre: ""
-      }
+      activeTab: 'presupuesto',
+      data_ofertas: datosIniciales()
+    }
+  },
+  watch: {
+    '$route'() {
+      this.inicializar()
     }
   },
   computed: {
@@ -88,6 +97,15 @@ export default {
     DocumentosTab
   },
   methods: {
+    inicializar() {
+      this.ofertaId = this.$route.params.id;
+      this.isEditing = !!this.ofertaId;
+      this.activeTab = 'presupuesto';
+      this.data_ofertas = datosIniciales();
+      if (this.isEditing) {
+        this.cargarOferta();
+      }
+    },
     actualizarDatos(datosActualizados) {
       // Sincronizar los datos del padre con los datos actualizados del hijo
       this.data_ofertas = { ...this.data_ofertas, ...datosActualizados }
@@ -167,11 +185,7 @@ export default {
     }
   },
   created() {
-    this.ofertaId = this.$route.params.id;
-    if (this.ofertaId) {
-      this.isEditing = true;
-      this.cargarOferta();
-    }
+    this.inicializar();
   }
 }
 </script>

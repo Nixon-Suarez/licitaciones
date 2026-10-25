@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\models\Actividad;
 use App\models\Oferta;
 use Illuminate\Database\Capsule\Manager as Capsule;
@@ -37,8 +38,7 @@ class ActividadesController extends Controller
                 "data" => $actividad
             ]);
             return;
-        }
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             http_response_code(500);
             echo json_encode([
                 "code" => 500,
@@ -121,19 +121,17 @@ class ActividadesController extends Controller
             if ($nueva_actividad) {
                 http_response_code(201);
                 echo json_encode([
-                    "code" => 201, 
+                    "code" => 201,
                     "data" => "La actividad ha sido creada exitosamente"
                 ]);
-            }
-            else {
+            } else {
                 http_response_code(400);
                 echo json_encode([
                     "code" => 400,
                     "data" => "No se pudo crear la actividad, por favor intente nuevamente"
                 ]);
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             http_response_code(500);
             echo json_encode(["code" => 500, "data" => $e->getMessage()]);
         }
@@ -175,8 +173,7 @@ class ActividadesController extends Controller
                 $lector = IOFactory::createReaderForFile($archivo['tmp_name']);
                 $lector->setReadDataOnly(true);
                 $documento = $lector->load($archivo['tmp_name']);
-            }
-            catch (\Throwable $th) {
+            } catch (\Throwable $th) {
                 http_response_code(400);
                 echo json_encode([
                     "code" => 400,
@@ -286,7 +283,7 @@ class ActividadesController extends Controller
                 $existentes = array_flip(Actividad::whereIn('codigo_producto', $codigos)->pluck('codigo_producto')->all());
                 foreach ($registros as $indice => $registro) {
                     if (isset($existentes[$registro['codigo_producto']])) {
-                        $errores[] = ["fila" => $registro['fila'], "motivo" => "El codigo_producto " . $registro['codigo_producto'] . " ya existe en el sistema"];
+                        $errores[] = ["fila" => $registro['fila'], "motivo" => "El codigo producto " . $registro['codigo_producto'] . " ya existe en el sistema"];
                         unset($registros[$indice]);
                     }
                 }
@@ -317,8 +314,7 @@ class ActividadesController extends Controller
                     Actividad::insert($lote);
                 }
                 Capsule::connection()->commit();
-            }
-            catch (\Throwable $th) {
+            } catch (\Throwable $th) {
                 Capsule::connection()->rollBack();
                 throw $th;
             }
@@ -329,8 +325,7 @@ class ActividadesController extends Controller
                 "data" => "Se cargaron " . count($datos) . " actividades correctamente"
             ]);
             return;
-        }
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             error_log("Error en crearActividadMasivoControlador: " . $th->getMessage());
             http_response_code(500);
             echo json_encode([
@@ -347,7 +342,7 @@ class ActividadesController extends Controller
             $documento = new Spreadsheet();
             $hoja = $documento->getActiveSheet();
             $hoja->setTitle('Actividades');
-            $encabezados = ['codigo_segmento', 'segmento', 'codigo_familia', 'familia', 'codigo_clase', 'clase', 'codigo_producto', 'producto'];
+            $encabezados = ['codigo segmento', 'segmento', 'codigo familia', 'familia', 'codigo clase', 'clase', 'codigo producto', 'producto'];
             $hoja->fromArray($encabezados, null, 'A1');
             $ejemplo = [10, 'Material Vivo Vegetal y Animal, Accesorios y Suministros', 1010, 'Animales vivos', 101015, 'Animales de granja', 10101501, 'Gatos'];
             $hoja->fromArray($ejemplo, null, 'A2');
@@ -361,8 +356,7 @@ class ActividadesController extends Controller
             $escritor = new Xlsx($documento);
             $escritor->save('php://output');
             exit;
-        }
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             error_log("Error en descargarPlantillaControlador: " . $th->getMessage());
             http_response_code(500);
             echo json_encode([
@@ -409,19 +403,18 @@ class ActividadesController extends Controller
                 http_response_code(200);
                 echo json_encode([
                     "code" => 200,
-                    "data" => "La actividad" . $actividad['producto']." ha sido eliminada del sistema correctamente"
+                    "data" => "La actividad" . $actividad['producto'] . " ha sido eliminada del sistema correctamente"
                 ]);
                 return;
-            }
-            else {
+            } else {
                 http_response_code(500);
                 echo json_encode([
                     "code" => 500,
-                    "data" => "No hemos podido eliminar la actividad" . $actividad['producto'] . " del sistema, por favor intente nuevamente"]);
+                    "data" => "No hemos podido eliminar la actividad" . $actividad['producto'] . " del sistema, por favor intente nuevamente"
+                ]);
                 return;
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             error_log("Error en eliminar la actividad: " . $e->getMessage());
             http_response_code(500);
             echo json_encode([
@@ -473,8 +466,7 @@ class ActividadesController extends Controller
                 "data" => $actividades
             ]);
             return;
-        }
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             http_response_code(500);
             echo json_encode([
                 "code" => 500,

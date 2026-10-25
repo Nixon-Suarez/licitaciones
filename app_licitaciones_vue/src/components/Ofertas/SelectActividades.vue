@@ -10,6 +10,7 @@
 <template>
   <div class="mb-4">
     <label for="actividad" class="form-label">Actividad</label>
+    <label for="titulo_adjunto" class="form-label asterisco-obligatorio">*</label>
     <input readonly @click="abrirModal" type="text" class="form-select" style="cursor: pointer;" v-model="actividad_nombre" placeholder="Seleccione una actividad" required>
   </div>
   <!-- Modal Actividades -->
@@ -89,7 +90,7 @@
           <div v-if="alerta_exitosa" class="alert alert-success" role="alert">
             Consulta realizada con éxito
           </div>
-          <div v-if="alerta_fallido" class="alert alert-error" role="alert">
+          <div v-if="alerta_fallido" class="alert alert-danger" role="alert">
             Consulta fallida, por favor intente nuevamente
           </div>
         </div>

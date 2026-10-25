@@ -1,5 +1,5 @@
 <template>
-  <div class="tab-pane fade" id="adjunto">
+  <div class="tab-pane fade" :class="{ 'show active': activo }" id="adjunto">
     <div class="card shadow-sm mt-3">
         <div class="card-header bg-dark text-white">
             Documentos asociados {{oferta.consecutivo}}
@@ -61,6 +61,10 @@ export default {
     oferta: {
       type: Object,
       required: true
+    },
+    activo: {
+      type: Boolean,
+      default: false
     }
   },
   components: {

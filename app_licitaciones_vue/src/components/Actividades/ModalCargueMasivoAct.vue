@@ -15,13 +15,13 @@
                 <p class="mb-1"><strong>Formato requerido (.xlsx)</strong></p>
                 <p class="mb-1">La primera fila son los encabezados. El orden de las columnas debe ser:</p>
                 <ol class="mb-1 ps-3">
-                  <li>codigo_segmento (numérico)</li>
+                  <li>codigo segmento (numérico)</li>
                   <li>segmento (texto)</li>
-                  <li>codigo_familia (numérico)</li>
+                  <li>codigo familia (numérico)</li>
                   <li>familia (texto)</li>
-                  <li>codigo_clase (numérico)</li>
+                  <li>codigo clase (numérico)</li>
                   <li>clase (texto)</li>
-                  <li>codigo_producto (numérico)</li>
+                  <li>codigo producto (numérico)</li>
                   <li>producto (texto)</li>
                 </ol>
                 <p class="mb-2">Si una fila tiene error o el código de producto ya existe, no se carga ninguna.</p>

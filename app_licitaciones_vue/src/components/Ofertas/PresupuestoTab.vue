@@ -1,5 +1,5 @@
 <template>
-  <div class="tab-pane fade show active" id="presupuesto" role="tabpanel">
+  <div class="tab-pane fade" :class="{ 'show active': activo }" id="presupuesto" role="tabpanel">
     <div class="card shadow-sm">
       <div class="card-header bg-primary text-white">
           Registrar Presupuesto
@@ -10,6 +10,7 @@
           <input type="hidden" name="modulo_ofertas" v-model="modulo_ofertas" value="registrar_oferta">
           <input type="hidden" name="oferta_id" v-model="oferta_id">
           <label for="objeto" class="form-label">Objeto</label>
+          <label for="titulo_adjunto" class="form-label asterisco-obligatorio">*</label>
 <input type="text" class="form-control contador-texto" :class="{ 'border-danger': objetoAlLimite }" v-model="objeto" name="objeto" maxlength="150" required data-contador="contadorObjeto">
           <div class="form-text" :class="{ 'text-danger fw-semibold': objetoAlLimite }">
               <span id="contadorObjeto">{{ objetoContador }}</span>/150 caracteres
@@ -21,6 +22,7 @@
         <!-- Descripción -->
         <div class="mb-3">
           <label for="descripcion" class="form-label">Descripción / Alcance</label>
+          <label for="titulo_adjunto" class="form-label asterisco-obligatorio">*</label>
           <textarea
               class="form-control contador-texto"
               :class="{ 'border-danger': descripcionAlLimite }"
@@ -41,6 +43,7 @@
         <!-- Moneda -->
         <div class="mb-3">
           <label for="moneda" class="form-label">Moneda</label>
+          <label for="titulo_adjunto" class="form-label asterisco-obligatorio">*</label>
           <select class="form-select" v-model="moneda" name="moneda" required>
               <option value="">Seleccione...</option>
               <option value="COP">COP</option>
@@ -54,6 +57,7 @@
         <!-- Presupuesto -->
         <div class="mb-3">
           <label for="presupuesto" class="form-label">Presupuesto</label>
+          <label for="titulo_adjunto" class="form-label asterisco-obligatorio">*</label>
           <input type="number" class="form-control" v-model="presupuesto" name="presupuesto" min="0" step="0.01" required>
           <div class="form-text">
               Solo números, máximo 2 decimales.
@@ -81,6 +85,10 @@ export default {
       type: Object,
       required: true
     },
+    activo: {
+      type: Boolean,
+      default: false
+    }
   },
   emits: ['update:data_ofertas'],
   data() {

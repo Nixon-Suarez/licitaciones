@@ -4,12 +4,12 @@
   <ul class="nav nav-tabs mb-3">
     <li class="nav-item">
       <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#ver-presupuesto">
-          Presupuesto
+          Información Básica
       </button>
     </li>
     <li class="nav-item">
       <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ver-fechas">
-          Periodo de ejecución
+          Cronograma
       </button>
     </li>
     <li class="nav-item">
