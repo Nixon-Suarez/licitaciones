@@ -64,6 +64,7 @@ export default {
                 let datos = {
                     usuario: response.data.data.usuario,
                     id_usuario: response.data.data.id,
+                    perfil: response.data.data.perfil,
                     token: response.data.token
                 }
                 // guardar datos en el store

@@ -22,6 +22,7 @@ class Actividad extends Model
         'clase',
         'codigo_producto',
         'producto',
+        'usuario_id',
     ];
 
     protected $casts = [
@@ -29,6 +30,7 @@ class Actividad extends Model
         'codigo_familia' => 'integer',
         'codigo_clase' => 'integer',
         'codigo_producto' => 'integer',
+        'usuario_id' => 'integer',
     ];
 
     /**

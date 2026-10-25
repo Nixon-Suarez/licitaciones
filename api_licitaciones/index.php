@@ -52,28 +52,28 @@ if ($uri == "/" && $method == "GET") {
 
 if ($uri == '/api/actividad/get' && $method == "GET") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
 
     $id_actividad = isset($_GET['id']) ? $_GET['id'] : null;
     $id_actividad = $ContladorBase->limpiarCadena($id_actividad);
 
     $controller = new ActividadesController();
-    $controller->getActividades($id_actividad);
+    $controller->getActividades($id_actividad, $usuario);
     exit;
 }
 
 if ($uri == "/api/actividad/update" && $method == "PUT") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
 
     $controller = new ActividadesController();
-    $controller->ActualizarActividadControlador();
+    $controller->ActualizarActividadControlador($usuario);
     exit;
 }
 
 if ($uri == '/api/actividad/list' && $method == "GET") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
 
     $pagina = $ContladorBase->limpiarCadena($_GET['pagina']) ?? 1;
     $registros = $ContladorBase->limpiarCadena($_GET['registros']) ?? 10;
@@ -81,25 +81,25 @@ if ($uri == '/api/actividad/list' && $method == "GET") {
     $producto = $ContladorBase->limpiarCadena($_GET['producto']) ?? '';
 
     $controller = new ActividadesController();
-    $controller->listarActividadesControlador($pagina, $registros, $segmento, $producto);
+    $controller->listarActividadesControlador($pagina, $registros, $segmento, $producto, $usuario);
     exit;
 }
 
 if ($uri == "/api/actividad/insert" && $method == "POST") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
 
     $controller = new ActividadesController();
-    $controller->InsertActividadControlador();
+    $controller->InsertActividadControlador($usuario);
     exit;
 }
 
 if ($uri == "/api/actividad/masivo" && $method == "POST") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
 
     $controller = new ActividadesController();
-    $controller->crearActividadMasivoControlador();
+    $controller->crearActividadMasivoControlador($usuario);
     exit;
 }
 
@@ -114,12 +114,12 @@ if ($uri == "/api/actividad/plantilla" && $method == "GET") {
 
 if (preg_match('/^\/api\/actividad\/delete\/(\d+)$/', $uri, $matches) && $method == "DELETE") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
     $id_actividad = $matches[1];
     $id_actividad = $ContladorBase->limpiarCadena($id_actividad);
 
     $controller = new ActividadesController();
-    $controller->eliminarActividadControlador($id_actividad);
+    $controller->eliminarActividadControlador($id_actividad, $usuario);
     exit;
 }
 
@@ -138,7 +138,8 @@ if ($uri == "/api/user/insert" && $method == "POST") {
 
 if (preg_match('/^\/api\/user\/delete\/(\d+)$/', $uri, $matches) && $method == "DELETE") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
+    $auth->requerirPerfil($usuario, [1]);
     $id_user = $matches[1];
     $id_user = $ContladorBase->limpiarCadena($id_user);
 
@@ -149,7 +150,8 @@ if (preg_match('/^\/api\/user\/delete\/(\d+)$/', $uri, $matches) && $method == "
 
 if ($uri == "/api/user/update" && $method == "PUT") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
+    $auth->requerirPerfil($usuario, [1]);
 
     $controller = new userController();
     $controller->actualizarUsuarioControlador();
@@ -158,58 +160,58 @@ if ($uri == "/api/user/update" && $method == "PUT") {
 
 if ($uri == "/api/ofertaDocumento/insert" && $method == "POST") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
 
     $controller = new ofertaDocumentController();
-    $controller->crearOfertaDocumentControlador();
+    $controller->crearOfertaDocumentControlador($usuario);
     exit;
 }
 
 if ($uri == '/api/ofertaDocumento/get' && $method == "GET") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
     $id_documento = $_GET['id'] ?? null;
     $id_documento = $ContladorBase->limpiarCadena($id_documento);
 
     $controller = new ofertaDocumentController();
-    $controller->getOfertaDocumentControlador($id_documento);
+    $controller->getOfertaDocumentControlador($id_documento, $usuario);
     exit;
 }
 
 if (preg_match('/^\/api\/ofertaDocumento\/delete\/(\d+)$/', $uri, $matches) && $method == "DELETE") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
     $id_documento = $matches[1];
     $id_documento = $ContladorBase->limpiarCadena($id_documento);
 
     $controller = new ofertaDocumentController();
-    $controller->eliminarOfertaDocumentControlador($id_documento);
+    $controller->eliminarOfertaDocumentControlador($id_documento, $usuario);
     exit;
 }
 
 if ($uri == "/api/oferta/insert" && $method == "POST") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
 
     $controller = new ofertaController();
-    $controller->InsertOfertaControlador();
+    $controller->InsertOfertaControlador($usuario);
     exit;
 }
 
 if (preg_match('/\/api\/oferta\/find\/(\d+)/', $uri, $matches) && $method == "GET") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
     $id_oferta = $matches[1];
     $id_oferta = $ContladorBase->limpiarCadena($id_oferta);
 
     $controller = new ofertaController();
-    $controller->getOfertaControlador($id_oferta);
+    $controller->getOfertaControlador($id_oferta, $usuario);
     exit;
 }
 
 if ($uri == '/api/oferta/list' && $method == "GET") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
 
     $pagina = $ContladorBase->limpiarCadena($_GET['pagina']) ?? 1;
     $registros = $ContladorBase->limpiarCadena($_GET['registros']) ?? 10;
@@ -218,22 +220,32 @@ if ($uri == '/api/oferta/list' && $method == "GET") {
     $objeto = $ContladorBase->limpiarCadena($_GET['objeto']) ?? '';
 
     $controller = new ofertaController();
-    $controller->listarOfertaControlador($pagina, $registros, $descripcion, $consecutivo, $objeto);
+    $controller->listarOfertaControlador($pagina, $registros, $descripcion, $consecutivo, $usuario, $objeto);
     exit;
 }
 
 if ($uri == "/api/oferta/update" && $method == "PUT") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
 
     $controller = new ofertaController();
-    $controller->ActualizarOfertaControlador();
+    $controller->ActualizarOfertaControlador($usuario);
+    exit;
+}
+
+if (preg_match('/^\/api\/oferta\/delete\/(\d+)$/', $uri, $matches) && $method == "DELETE") {
+
+    $usuario = $auth->verificarToken();
+    $id_oferta = $ContladorBase->limpiarCadena($matches[1]);
+
+    $controller = new ofertaController();
+    $controller->eliminarOfertaControlador($id_oferta, $usuario);
     exit;
 }
 
 if ($uri == "/api/oferta/excel" && $method == "GET") {
 
-    $auth->verificarToken();
+    $usuario = $auth->verificarToken();
 
     $pagina = $ContladorBase->limpiarCadena($_GET['pagina'] ?? 1);
     $registros = $ContladorBase->limpiarCadena($_GET['registros'] ?? 10);
@@ -242,7 +254,7 @@ if ($uri == "/api/oferta/excel" && $method == "GET") {
     $objeto = $ContladorBase->limpiarCadena($_GET['objeto'] ?? '');
 
     $controller = new ofertaController();
-    $controller->generarExcelOfertaControlador($pagina, $registros, $descripcion, $consecutivo, $objeto);
+    $controller->generarExcelOfertaControlador($pagina, $registros, $descripcion, $consecutivo, $usuario, $objeto);
     exit;
 }
 

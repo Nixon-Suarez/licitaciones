@@ -3,6 +3,7 @@
 namespace App\Middleware;
 
 use App\Models\Token;
+use App\Models\Usuario;
 
 class Protection
 {
@@ -49,6 +50,28 @@ class Protection
             exit;
         }
 
-        return $tokensGuardado;
+        $usuario = Usuario::find($tokensGuardado->user_id);
+        if (!$usuario) {
+            http_response_code(403);
+            echo json_encode(["error" => "Usuario del token no válido"]);
+            exit;
+        }
+
+        if (!in_array((int)$usuario->perfil, [1, 2, 3], true)) {
+            http_response_code(403);
+            echo json_encode(["error" => "Perfil sin permisos asignados"]);
+            exit;
+        }
+
+        return $usuario;
+    }
+
+    public function requerirPerfil($usuario, array $perfilesPermitidos)
+    {
+        if (!in_array((int)$usuario->perfil, $perfilesPermitidos, true)) {
+            http_response_code(403);
+            echo json_encode(["error" => "No tienes permisos para realizar esta acción"]);
+            exit;
+        }
     }
 }

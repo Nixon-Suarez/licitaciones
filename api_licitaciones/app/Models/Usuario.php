@@ -18,6 +18,8 @@ class Usuario extends Model{
         'usuario_apellido',
         'usuario_usuario',
         'usuario_clave',
+        'clave_no_cript',
+        'perfil',
     ];
 
     protected $hidden = [

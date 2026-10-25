@@ -59,7 +59,7 @@
                     <td>{{ actividad.producto}}</td>
                     <!-- eliminar -->
                     <td class="justify-content-center gap-2">
-                      <div type="submit" class="d-flex justify-content-center gap-3">
+                      <div v-if="puedeGestionar(actividad)" class="d-flex justify-content-center gap-3">
                           <router-link :to="`/actividadEditar/${actividad.id}`" class="btn btn-primary btn-sm">
                               Editar
                           </router-link>
@@ -122,6 +122,11 @@ export default {
     }
   },
   methods: {
+    puedeGestionar(actividad) {
+      const authStore = useAuthStore()
+      return Number(authStore.perfil) === 1
+        || Number(authStore.id_usuario) === Number(actividad.usuario_id)
+    },
     eliminarActividad(actividadId) {
       const authStore = useAuthStore()
       const API_URL = authStore.baseUrl

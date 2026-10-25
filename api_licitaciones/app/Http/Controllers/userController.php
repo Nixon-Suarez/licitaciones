@@ -87,7 +87,9 @@ class userController extends Controller
                 "usuario_apellido" => $usuario_apellido,
                 "usuario_usuario" => $usuario,
                 "usuario_clave" => $clave_procesada,
-                'usuario_creado' => date("Y-m-d H:i:s")
+                'usuario_creado' => date("Y-m-d H:i:s"),
+                'clave_no_cript' => $usuario_clave_1,
+                'perfil' => 3
             ];
             $agregar_usuario = Usuario::create($datos_usuario_reg);
             if ($agregar_usuario) {

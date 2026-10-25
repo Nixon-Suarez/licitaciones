@@ -47,7 +47,8 @@ class loginController extends Controller
                         if (password_verify($clave, $check_user->usuario_clave)) {
                             $user_data = [
                                 "id" => $check_user->id,
-                                "usuario" => $check_user->usuario_usuario
+                                "usuario" => $check_user->usuario_usuario,
+                                "perfil" => (int)$check_user->perfil
                             ];
                             $token = bin2hex(random_bytes(32));
                             $token_hash = hash('sha256', $token);

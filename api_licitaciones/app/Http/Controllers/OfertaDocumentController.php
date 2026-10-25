@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\OfertaDocumento;
-use Illuminate\Support\Composer;
+use App\Models\Oferta;
 
 class ofertaDocumentController extends Controller
 {
-    public function crearOfertaDocumentControlador()
+    public function crearOfertaDocumentControlador($usuario)
     {   
         try{
             $descripcion = trim($this->limpiarCadena($_POST['descripcion'] ?? ''));
@@ -43,6 +43,19 @@ class ofertaDocumentController extends Controller
                     "code" => 400,
                     "data" => 'ID de oferta no válido'
                 ]);
+                return;
+            }
+            $oferta = Oferta::find($id_oferta);
+            if (!$oferta) {
+                http_response_code(404);
+                echo json_encode([
+                    "code" => 404,
+                    "data" => 'La oferta no existe'
+                ]);
+                return;
+            }
+            if (!$this->puedeGestionarRegistro($usuario, $oferta->usuario_id)) {
+                $this->responderAccesoDenegado();
                 return;
             }
             if ($this->verificarDatos("^(?!\s*$)[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]{1,150}$", $titulo)) {
@@ -172,7 +185,7 @@ class ofertaDocumentController extends Controller
             return;
         }
     }
-    public function getOfertaDocumentControlador($id_of)
+    public function getOfertaDocumentControlador($id_of, $usuario)
     {
         try {
             if (!is_numeric($id_of) || $id_of <= 0) {
@@ -180,6 +193,15 @@ class ofertaDocumentController extends Controller
                 echo json_encode([
                     "code" => 400,
                     "data" => 'ID de oferta no válido'
+                ]);
+                return;
+            }
+            $oferta = $this->filtrarRegistrosVisibles(Oferta::where('id', $id_of), $usuario)->first();
+            if (!$oferta) {
+                http_response_code(404);
+                echo json_encode([
+                    "code" => 404,
+                    "data" => 'La oferta no existe'
                 ]);
                 return;
             }
@@ -230,7 +252,7 @@ class ofertaDocumentController extends Controller
             return;
         }
     }
-    public function eliminarOfertaDocumentControlador($id_documento)
+    public function eliminarOfertaDocumentControlador($id_documento, $usuario)
     {
         $id = trim($this->limpiarCadena($id_documento ?? ''));
         try {
@@ -249,6 +271,11 @@ class ofertaDocumentController extends Controller
                     "code" => 404,
                     "data" => 'La oferta no existe'
                 ]);
+                return;
+            }
+            $oferta = Oferta::find($oferta_doc->licitacion_id);
+            if (!$oferta || !$this->puedeGestionarRegistro($usuario, $oferta->usuario_id)) {
+                $this->responderAccesoDenegado();
                 return;
             }
             $eliminar_doc = OfertaDocumento::destroy($id);

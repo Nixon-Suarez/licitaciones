@@ -1,6 +1,6 @@
 <template>
   <div class="content p-4">
-    <h2 class="mb-4">{{ isEditing ? 'Editar Actividad' : 'Nueva Actividad' }}</h2>
+    <h2 class="mb-4">{{ isEditing ? (puedeEditar ? 'Editar Actividad' : 'Visualizar Actividad') : 'Nueva Actividad' }}</h2>
     <!-- NAV TABS -->
     <ul class="nav nav-tabs mb-3">
       <li class="nav-item" role="presentation">
@@ -11,12 +11,12 @@
     <form @submit.prevent="guardarActividad">
       <div class="tab-content">
         <!-- TAB actividad -->
-        <ActividadTab :data_actividades="data_actividades" :activo="activeTab === 'actividad'" @update:data_actividades="actualizarDatos"/>
+        <ActividadTab :data_actividades="data_actividades" :activo="activeTab === 'actividad'" :solo-lectura="isEditing && !puedeEditar" @update:data_actividades="actualizarDatos"/>
       </div>
 
       <!-- BOTÓN -->
       <div class="mb-3 mt-2 d-flex justify-content-center">
-          <button type="submit" id="btnGuardarTodo" class="btn btn-success" :disabled="!formularioValido">
+          <button v-if="!isEditing || puedeEditar" type="submit" id="btnGuardarTodo" class="btn btn-success" :disabled="!formularioValido">
               {{ isEditing ? 'Actualizar' : 'Guardar' }}
           </button>
       </div>
@@ -47,6 +47,7 @@ export default {
   data() {
     return {
       isEditing: false,
+      puedeEditar: true,
       ActividadId: null,
       activeTab: 'actividad',
       data_actividades: datosIniciales()
@@ -87,6 +88,7 @@ export default {
     inicializar() {
       this.ActividadId = this.$route.params.id;
       this.isEditing = !!this.ActividadId;
+      this.puedeEditar = !this.isEditing;
       this.activeTab = 'actividad';
       this.data_actividades = datosIniciales();
       if (this.isEditing) {
@@ -108,6 +110,9 @@ export default {
       .then(response => {
           if(response.data.code == 200){
               const actividad = response.data.data;
+              const authStore = useAuthStore()
+              this.puedeEditar = Number(authStore.perfil) === 1
+                || Number(authStore.id_usuario) === Number(actividad.usuario_id)
               this.data_actividades = {
                 id_actividad: actividad.id,
                 cod_segmento: actividad.codigo_segmento,
@@ -118,6 +123,7 @@ export default {
                 nom_clase: actividad.clase,
                 cod_product: actividad.codigo_producto,
                 nom_product: actividad.producto,
+                usuario_id: actividad.usuario_id,
               };
           }
       })
@@ -141,6 +147,8 @@ export default {
       })
     },
     guardarActividad(){
+      if (this.isEditing && !this.puedeEditar) return
+
       const authStore = useAuthStore()
       const API_URL = authStore.baseUrl
       const method = this.isEditing ? 'put' : 'post'

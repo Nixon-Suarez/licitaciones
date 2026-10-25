@@ -11,11 +11,12 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ActividadesController extends Controller
 {
-    public function getActividades($id = null)
+    public function getActividades($id, $usuario)
     {
         try {
             if (empty($id)) {
-                $actividades = Actividad::select('id', 'producto')->get();
+                $query = Actividad::select('id', 'producto', 'usuario_id');
+                $actividades = $query->get();
                 http_response_code(200);
                 echo json_encode([
                     "code" => 200,
@@ -23,7 +24,7 @@ class ActividadesController extends Controller
                 ]);
                 return;
             }
-            $actividad = Actividad::select(
+            $query = Actividad::select(
                 'id',
                 'codigo_segmento',
                 'segmento',
@@ -32,8 +33,10 @@ class ActividadesController extends Controller
                 'codigo_clase',
                 'clase',
                 'codigo_producto',
-                'producto'
-            )->find($id);
+                'producto',
+                'usuario_id'
+            );
+            $actividad = $query->find($id);
             if (!$actividad) {
                 http_response_code(404);
                 echo json_encode([
@@ -58,7 +61,7 @@ class ActividadesController extends Controller
         }
     }
 
-    public function InsertActividadControlador()
+    public function InsertActividadControlador($usuario)
     {
         try {
             $input = json_decode(file_get_contents("php://input"), true);
@@ -125,7 +128,8 @@ class ActividadesController extends Controller
                 "codigo_clase" => $cod_clase,
                 "clase" => $nom_clase,
                 "codigo_producto" => $cod_product,
-                "producto" => $nom_product
+                "producto" => $nom_product,
+                "usuario_id" => $usuario->id
             ];
             $nueva_actividad = Actividad::create($datos_actividad_reg);
             if ($nueva_actividad) {
@@ -147,10 +151,23 @@ class ActividadesController extends Controller
         }
     }
 
-    public function ActualizarActividadControlador(){
+    public function ActualizarActividadControlador($usuario){
         try {
             $input = json_decode(file_get_contents("php://input"), true);
             $actividad = trim($this->limpiarCadena($input['id_actividad'] ?? ''));
+            $actividadExistente = Actividad::find($actividad);
+            if (!$actividadExistente) {
+                http_response_code(404);
+                echo json_encode([
+                    "code" => 404,
+                    "data" => "La actividad no existe"
+                ]);
+                return;
+            }
+            if (!$this->puedeGestionarRegistro($usuario, $actividadExistente->usuario_id)) {
+                $this->responderAccesoDenegado();
+                return;
+            }
             $cod_segmento = trim($this->limpiarCadena($input['cod_segmento'] ?? ''));
             $nom_segmento = trim($this->limpiarCadena($input['nom_segmento'] ?? ''));
             $cod_familia = trim($this->limpiarCadena($input['cod_familia'] ?? ''));
@@ -227,7 +244,7 @@ class ActividadesController extends Controller
         }
     }
 
-    public function crearActividadMasivoControlador()
+    public function crearActividadMasivoControlador($usuario)
     {
         try {
             $archivo = $_FILES['archivo_actividades'] ?? null;
@@ -393,8 +410,9 @@ class ActividadesController extends Controller
                 return;
             }
 
-            $datos = array_map(function ($registro) {
+            $datos = array_map(function ($registro) use ($usuario) {
                 unset($registro['fila']);
+                $registro['usuario_id'] = $usuario->id;
                 return $registro;
             }, $registros);
 
@@ -457,7 +475,7 @@ class ActividadesController extends Controller
         }
     }
 
-    public function eliminarActividadControlador($id_actividad)
+    public function eliminarActividadControlador($id_actividad, $usuario)
     {
         $id = trim($this->limpiarCadena($id_actividad ?? ''));
         try {
@@ -476,6 +494,10 @@ class ActividadesController extends Controller
                     "code" => 404,
                     "data" => 'La actividad no existe'
                 ]);
+                return;
+            }
+            if (!$this->puedeGestionarRegistro($usuario, $actividad->usuario_id)) {
+                $this->responderAccesoDenegado();
                 return;
             }
             $consecutivos = Oferta::where("actividad_id", $actividad->id)
@@ -515,7 +537,7 @@ class ActividadesController extends Controller
         }
     }
 
-    public function listarActividadesControlador($pagina, $registros, $segmento, $producto)
+    public function listarActividadesControlador($pagina, $registros, $segmento, $producto, $usuario)
     {
         try {
             $pagina = $this->limpiarCadena($pagina);

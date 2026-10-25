@@ -2,7 +2,7 @@
   <div class="tab-pane fade" :class="{ 'show active': activo }" id="actividad" role="tabpanel">
     <div class="card shadow-sm">
       <div class="card-header bg-primary text-white">
-          Registrar actividad
+          {{ soloLectura ? 'Visualizar actividad' : 'Registrar actividad' }}
       </div>
       <div class="card-body">
         <input type="hidden" name="modulo_actividades" v-model="modulo_actividades" value="registrar_actividad">
@@ -12,7 +12,7 @@
             <div class="col-md-6">
               <label for="cod_segmento" class="form-label">Codigo segmento</label>
               <label for="cod_segmento" class="form-label asterisco-obligatorio">*</label>
-              <input id="cod_segmento" type="number" class="form-control" v-model="cod_segmento" name="cod_segmento" maxlength="5" required>
+              <input id="cod_segmento" type="number" class="form-control" v-model="cod_segmento" name="cod_segmento" maxlength="5" :readonly="soloLectura" required>
               <div class="invalid-feedback">
                   El campo cod_segmento es obligatorio.
               </div>
@@ -21,7 +21,7 @@
             <div class="col-md-6">
               <label for="nom_segmento" class="form-label">Nombre segmento</label>
               <label for="nom_segmento" class="form-label asterisco-obligatorio">*</label>
-              <input id="nom_segmento" type="text" class="form-control" v-model="nom_segmento" name="nom_segmento" maxlength="150" required>
+              <input id="nom_segmento" type="text" class="form-control" v-model="nom_segmento" name="nom_segmento" maxlength="150" :readonly="soloLectura" required>
               <div class="invalid-feedback">
                   La nom_segmento es obligatoria.
               </div>
@@ -30,7 +30,7 @@
             <div class="col-md-6">
               <label for="cod_familia" class="form-label">Codigo familia</label>
               <label for="cod_familia" class="form-label asterisco-obligatorio">*</label>
-              <input id="cod_familia" type="number" class="form-control" v-model="cod_familia" name="cod_familia" maxlength="5" required>
+              <input id="cod_familia" type="number" class="form-control" v-model="cod_familia" name="cod_familia" maxlength="5" :readonly="soloLectura" required>
               <div class="invalid-feedback">
                   El campo cod_familia es obligatorio.
               </div>
@@ -39,7 +39,7 @@
             <div class="col-md-6">
               <label for="nom_familia" class="form-label">Nombre familia</label>
               <label for="nom_familia" class="form-label asterisco-obligatorio">*</label>
-              <input id="nom_familia" type="text" class="form-control" v-model="nom_familia" name="nom_familia" maxlength="150" required>
+              <input id="nom_familia" type="text" class="form-control" v-model="nom_familia" name="nom_familia" maxlength="150" :readonly="soloLectura" required>
               <div class="invalid-feedback">
                   La nom_familia es obligatoria.
               </div>
@@ -48,7 +48,7 @@
             <div class="col-md-6">
               <label for="cod_clase" class="form-label">Codigo clase</label>
               <label for="cod_clase" class="form-label asterisco-obligatorio">*</label>
-              <input id="cod_clase" type="number" class="form-control" v-model="cod_clase" name="cod_clase" maxlength="5" required>
+              <input id="cod_clase" type="number" class="form-control" v-model="cod_clase" name="cod_clase" maxlength="5" :readonly="soloLectura" required>
               <div class="invalid-feedback">
                   El campo cod_clase es obligatorio.
               </div>
@@ -57,7 +57,7 @@
             <div class="col-md-6">
               <label for="nom_clase" class="form-label">Nombre clase</label>
               <label for="nom_clase" class="form-label asterisco-obligatorio">*</label>
-              <input id="nom_clase" type="text" class="form-control" v-model="nom_clase" name="nom_clase" maxlength="150" required>
+              <input id="nom_clase" type="text" class="form-control" v-model="nom_clase" name="nom_clase" maxlength="150" :readonly="soloLectura" required>
               <div class="invalid-feedback">
                   La nom_clase es obligatoria.
               </div>
@@ -66,7 +66,7 @@
             <div class="col-md-6">
               <label for="cod_product" class="form-label">Codigo producto</label>
               <label for="cod_product" class="form-label asterisco-obligatorio">*</label>
-              <input id="cod_product" type="number" class="form-control" v-model="cod_product" name="cod_product" maxlength="5" required>
+              <input id="cod_product" type="number" class="form-control" v-model="cod_product" name="cod_product" maxlength="5" :readonly="soloLectura" required>
               <div class="invalid-feedback">
                   El campo cod_product es obligatorio.
               </div>
@@ -75,7 +75,7 @@
             <div class="col-md-6">
               <label for="nom_product" class="form-label">Nombre producto</label>
               <label for="nom_product" class="form-label asterisco-obligatorio">*</label>
-              <input id="nom_product" type="text" class="form-control" v-model="nom_product" name="nom_product" maxlength="150" required>
+              <input id="nom_product" type="text" class="form-control" v-model="nom_product" name="nom_product" maxlength="150" :readonly="soloLectura" required>
               <div class="invalid-feedback">
                   El nom_product es obligatorio.
               </div>
@@ -95,6 +95,10 @@ export default {
       required: true
     },
     activo: {
+      type: Boolean,
+      default: false
+    },
+    soloLectura: {
       type: Boolean,
       default: false
     }

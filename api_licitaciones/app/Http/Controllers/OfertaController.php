@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Oferta;
 use App\Models\Actividad;
+use App\Models\OfertaDocumento;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 class ofertaController extends Controller
 {
-    public function InsertOfertaControlador()
+    public function InsertOfertaControlador($usuario)
     {
         try {
             $input = json_decode(file_get_contents("php://input"), true);
@@ -103,7 +105,7 @@ class ofertaController extends Controller
                 return;
             }
 
-            $check_actividad = Actividad::where("id", $actividad)->first();
+            $check_actividad = $this->filtrarRegistrosVisibles(Actividad::where("id", $actividad), $usuario)->first();
             if (!$check_actividad) {
                 http_response_code(400);
                 echo json_encode([
@@ -126,6 +128,7 @@ class ofertaController extends Controller
                 "hora_inicio" => $hora_inicio,
                 "hora_cierre" => $hora_fin,
                 "estado" => "creacion",
+                "usuario_id" => $usuario->id,
                 "creado_en" => date("Y-m-d H:i:s"),
                 "actualizado_en" => date("Y-m-d H:i:s")
             ];
@@ -176,12 +179,25 @@ class ofertaController extends Controller
             throw new \Exception("Error al generar el consecutivo: " . $e->getMessage());
         }
     }
-    public function ActualizarOfertaControlador()
+    public function ActualizarOfertaControlador($usuario)
     {
         try {
             $input = json_decode(file_get_contents("php://input"), true);
 
             $id = trim($this->limpiarCadena($input['id'] ?? ''));
+            $ofertaExistente = Oferta::find($id);
+            if (!$ofertaExistente) {
+                http_response_code(404);
+                echo json_encode([
+                    "code" => 404,
+                    "data" => "La oferta no existe"
+                ]);
+                return;
+            }
+            if (!$this->puedeGestionarRegistro($usuario, $ofertaExistente->usuario_id)) {
+                $this->responderAccesoDenegado();
+                return;
+            }
             $objeto = trim($this->limpiarCadena($input['objeto'] ?? ''));
             $descripcion = trim($this->limpiarCadena($input['descripcion'] ?? ''));
             $moneda = trim($this->limpiarCadena($input['moneda'] ?? ''));
@@ -274,7 +290,7 @@ class ofertaController extends Controller
                 return;
             }
 
-            $check_actividad = Actividad::where("id", $actividad)->first();
+            $check_actividad = $this->filtrarRegistrosVisibles(Actividad::where("id", $actividad), $usuario)->first();
             if (!$check_actividad) {
                 http_response_code(400);
                 echo json_encode([
@@ -332,7 +348,7 @@ class ofertaController extends Controller
             echo json_encode(["code" => 500, "data" => $e->getMessage()]);
         }
     }
-    public function getOfertaControlador($id)
+    public function getOfertaControlador($id, $usuario)
     {
         try {
             if (!is_numeric($id) || $id <= 0) {
@@ -343,7 +359,7 @@ class ofertaController extends Controller
                 ]);
                 return;
             }
-            $oferta = Oferta::find($id);
+            $oferta = $this->filtrarRegistrosVisibles(Oferta::query(), $usuario)->find($id);
             if (!$oferta) {
                 http_response_code(400);
                 echo json_encode([
@@ -381,7 +397,73 @@ class ofertaController extends Controller
         }
     }
 
-    public function listarOfertaControlador($pagina, $registros, $descripcion, $consecutivo, $objeto = '')
+    public function eliminarOfertaControlador($id, $usuario)
+    {
+        try {
+            if (!is_numeric($id) || $id <= 0) {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => "ID de oferta no válido"
+                ]);
+                return;
+            }
+
+            $oferta = Oferta::find($id);
+            if (!$oferta) {
+                http_response_code(404);
+                echo json_encode([
+                    "code" => 404,
+                    "data" => "La oferta no existe"
+                ]);
+                return;
+            }
+            if (!$this->puedeGestionarRegistro($usuario, $oferta->usuario_id)) {
+                $this->responderAccesoDenegado();
+                return;
+            }
+
+            $documentos = OfertaDocumento::where('licitacion_id', $oferta->id)->get();
+            Capsule::connection()->transaction(function () use ($oferta) {
+                OfertaDocumento::where('licitacion_id', $oferta->id)->delete();
+                $oferta->delete();
+            });
+
+            $archivosNoEliminados = [];
+            foreach ($documentos as $documento) {
+                $ruta = rtrim((string)$documento->ruta_archivo, '/\\')
+                    . DIRECTORY_SEPARATOR . $documento->archivo;
+                if (is_file($ruta) && !unlink($ruta)) {
+                    $archivosNoEliminados[] = $documento->nombre_original;
+                }
+            }
+
+            if ($archivosNoEliminados) {
+                error_log("Oferta eliminada; archivos pendientes: " . implode(', ', $archivosNoEliminados));
+                http_response_code(500);
+                echo json_encode([
+                    "code" => 500,
+                    "data" => "La oferta fue eliminada, pero no se pudieron borrar todos sus archivos adjuntos"
+                ]);
+                return;
+            }
+
+            http_response_code(200);
+            echo json_encode([
+                "code" => 200,
+                "data" => "La oferta ha sido eliminada exitosamente"
+            ]);
+        } catch (\Throwable $th) {
+            error_log("Error al eliminar la oferta: " . $th->getMessage());
+            http_response_code(500);
+            echo json_encode([
+                "code" => 500,
+                "data" => "Error al eliminar la oferta"
+            ]);
+        }
+    }
+
+    public function listarOfertaControlador($pagina, $registros, $descripcion, $consecutivo, $usuario, $objeto = '')
     {
         try {
             $pagina = $this->limpiarCadena($pagina);
@@ -393,7 +475,7 @@ class ofertaController extends Controller
             $inicio = ($pagina > 0) ? (($registros * $pagina) - $registros) : 0;
             $registros = ($registros > 0) ? (int)$registros : 10;
             // consulta
-            $query = Oferta::query();
+            $query = $this->filtrarRegistrosVisibles(Oferta::query(), $usuario);
             // Filtro por búsqueda
             if (!empty($descripcion || !empty($objeto))) {
                 $query->where(function($q) use ($descripcion) {
@@ -454,7 +536,7 @@ class ofertaController extends Controller
         }
     }
 
-    public function generarExcelOfertaControlador($pagina, $registros, $descripcion, $consecutivo, $objeto = '')
+    public function generarExcelOfertaControlador($pagina, $registros, $descripcion, $consecutivo, $usuario, $objeto = '')
     {
         try {
             while (ob_get_level()) {
@@ -467,7 +549,7 @@ class ofertaController extends Controller
             $consecutivo = $this->limpiarCadena($consecutivo);
             $objeto = $this->limpiarCadena($objeto);
 
-            $query = Oferta::query();
+            $query = $this->filtrarRegistrosVisibles(Oferta::query(), $usuario);
             if (!empty($descripcion)) {
                 $query->where(function($q) use ($descripcion) {
                     $q->where("descripcion", 'LIKE', "%$descripcion%")

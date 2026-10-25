@@ -26,11 +26,13 @@ class Oferta extends Model
         'fecha_cierre',
         'hora_cierre',
         'estado',
+        'usuario_id',
     ];
 
     protected $casts = [
         'presupuesto' => 'decimal:2',
         'actividad_id' => 'integer',
+        'usuario_id' => 'integer',
         'fecha_inicio' => 'date',
         'fecha_cierre' => 'date',
         'creado_en' => 'datetime',
