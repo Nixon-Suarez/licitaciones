@@ -2,6 +2,8 @@
 
 Aplicación para la gestión de licitaciones, ofertas, documentos adjuntos y actividades (catálogo UNSPSC), con autenticación por token, control de acceso por perfiles, filtros, paginación y exportación a Excel.
 
+Documentación completa (Diátaxis: tutorial, how-to, referencia y explicación): **[docs/README.md](docs/README.md)**.
+
 ---
 
 ## Requisitos
@@ -10,7 +12,7 @@ Aplicación para la gestión de licitaciones, ofertas, documentos adjuntos y act
 - MySQL/MariaDB
 - Composer
 - Node.js `^20.19.0` o `>=22.12.0` + npm
-- Apache con `mod_rewrite` (XAMPP/WAMP)
+- Apache con `mod_rewrite` (XAMPP, WAMP o [Laragon](docs/how-to/instalar-en-laragon.md))
 
 > Las extensiones `zip` y `gd` son necesarias para generar y leer archivos `.xlsx` con PhpSpreadsheet.
 
@@ -79,7 +81,7 @@ La URL base de la API está centralizada en `src/stores/authStore.js`:
 baseUrl: 'http://localhost/php/index.php/licitaciones/api_licitaciones/api/'
 ```
 
-Si el proyecto se monta en otra ruta o host, ajustar ese valor.
+Si el proyecto se monta en otra ruta o host, ajustar ese valor. En Laragon el host típico es `http://licitaciones.test/`; los pasos están en [docs/how-to/instalar-en-laragon.md](docs/how-to/instalar-en-laragon.md).
 
 ### 4) URLs de referencia
 
