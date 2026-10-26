@@ -6,6 +6,7 @@ import OfertasListView from '../views/OfertasListView.vue'
 import OfertasDetalleView from '../views/OfertasDetalleView.vue'
 import ActividadListView from '../views/ActividadListView.vue'
 import ActividadNewView from '../views/ActividadNewView.vue'
+import UsuarioUpdateView from '../views/UsuarioUpdateView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,6 +56,12 @@ const router = createRouter({
       name: 'actividadEditar',
       component: ActividadNewView
     },
+    {
+      path: '/usuarioUpdate',
+      name: 'usuarioUpdate',
+      component: UsuarioUpdateView
+    },
+
   ],
 })
 

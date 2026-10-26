@@ -129,6 +129,14 @@ if ($uri == "/api/user/login" && $method == "POST") {
     exit;
 }
 
+if ($uri == "/api/user/get" && $method == "GET") {
+    $usuario = $auth->verificarToken();
+    $id_usuario = $usuario['id'];
+    $controller = new userController();
+    $controller->getUsuario($id_usuario);
+    exit;
+}
+
 if ($uri == "/api/user/insert" && $method == "POST") {
 
     $controller = new userController();
@@ -151,10 +159,9 @@ if (preg_match('/^\/api\/user\/delete\/(\d+)$/', $uri, $matches) && $method == "
 if ($uri == "/api/user/update" && $method == "PUT") {
 
     $usuario = $auth->verificarToken();
-    $auth->requerirPerfil($usuario, [1]);
 
     $controller = new userController();
-    $controller->actualizarUsuarioControlador();
+    $controller->actualizarUsuarioControlador($usuario);
     exit;
 }
 

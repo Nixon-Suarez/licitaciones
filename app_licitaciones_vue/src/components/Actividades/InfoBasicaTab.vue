@@ -14,7 +14,7 @@
               <label for="cod_segmento" class="form-label asterisco-obligatorio">*</label>
               <input id="cod_segmento" type="number" class="form-control" v-model="cod_segmento" name="cod_segmento" maxlength="5" :readonly="soloLectura" required>
               <div class="invalid-feedback">
-                  El campo cod_segmento es obligatorio.
+                  El campo codigo segmento es obligatorio.
               </div>
             </div>
             <!-- nom_segmento -->
@@ -23,7 +23,7 @@
               <label for="nom_segmento" class="form-label asterisco-obligatorio">*</label>
               <input id="nom_segmento" type="text" class="form-control" v-model="nom_segmento" name="nom_segmento" maxlength="150" :readonly="soloLectura" required>
               <div class="invalid-feedback">
-                  La nom_segmento es obligatoria.
+                  La nombre del segmento es obligatoria.
               </div>
             </div>
             <!-- cod_familia -->
@@ -32,7 +32,7 @@
               <label for="cod_familia" class="form-label asterisco-obligatorio">*</label>
               <input id="cod_familia" type="number" class="form-control" v-model="cod_familia" name="cod_familia" maxlength="5" :readonly="soloLectura" required>
               <div class="invalid-feedback">
-                  El campo cod_familia es obligatorio.
+                  El campo codigo familia es obligatorio.
               </div>
             </div>
             <!-- nom_familia -->
@@ -41,7 +41,7 @@
               <label for="nom_familia" class="form-label asterisco-obligatorio">*</label>
               <input id="nom_familia" type="text" class="form-control" v-model="nom_familia" name="nom_familia" maxlength="150" :readonly="soloLectura" required>
               <div class="invalid-feedback">
-                  La nom_familia es obligatoria.
+                  La nombre de la familia es obligatoria.
               </div>
             </div>
             <!-- cod_clase -->
@@ -50,7 +50,7 @@
               <label for="cod_clase" class="form-label asterisco-obligatorio">*</label>
               <input id="cod_clase" type="number" class="form-control" v-model="cod_clase" name="cod_clase" maxlength="5" :readonly="soloLectura" required>
               <div class="invalid-feedback">
-                  El campo cod_clase es obligatorio.
+                  El campo codigo clase es obligatorio.
               </div>
             </div>
             <!-- nom_clase -->
@@ -59,7 +59,7 @@
               <label for="nom_clase" class="form-label asterisco-obligatorio">*</label>
               <input id="nom_clase" type="text" class="form-control" v-model="nom_clase" name="nom_clase" maxlength="150" :readonly="soloLectura" required>
               <div class="invalid-feedback">
-                  La nom_clase es obligatoria.
+                  La nombre de la clase es obligatoria.
               </div>
             </div>
             <!-- cod_product -->
@@ -68,7 +68,7 @@
               <label for="cod_product" class="form-label asterisco-obligatorio">*</label>
               <input id="cod_product" type="number" class="form-control" v-model="cod_product" name="cod_product" maxlength="5" :readonly="soloLectura" required>
               <div class="invalid-feedback">
-                  El campo cod_product es obligatorio.
+                  El campo codigo product es obligatorio.
               </div>
             </div>
             <!-- nom_product -->
@@ -77,7 +77,7 @@
               <label for="nom_product" class="form-label asterisco-obligatorio">*</label>
               <input id="nom_product" type="text" class="form-control" v-model="nom_product" name="nom_product" maxlength="150" :readonly="soloLectura" required>
               <div class="invalid-feedback">
-                  El nom_product es obligatorio.
+                  El nombre del product es obligatorio.
               </div>
             </div>
         </div>

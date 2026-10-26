@@ -63,10 +63,9 @@ import { useAuthStore } from '@/stores/authStore'
 
 export default {
   name: "InicioView",
-  data(){
-    const authStore = useAuthStore()
-    return {
-      usuario: authStore.usuario
+  computed: {
+    usuario() {
+      return useAuthStore().usuario
     }
   },
 };

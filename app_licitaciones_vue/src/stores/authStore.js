@@ -20,6 +20,17 @@ export const useAuthStore = defineStore('auth', {
       localStorage.setItem('userData', JSON.stringify(data))
     },
 
+    ActualizarUsuario(data) {
+      this.usuario = data.usuario ?? this.usuario
+      this.token = data.token ?? this.token
+      this.id_usuario = data.id_usuario ?? this.id_usuario
+      this.perfil = data.perfil ?? this.perfil
+
+      const guardado = localStorage.getItem('userData')
+      const actual = guardado ? JSON.parse(guardado) : {}
+      localStorage.setItem('userData', JSON.stringify({ ...actual, ...data }))
+    },
+
     Logout() {
       this.usuario = null
       this.token = null

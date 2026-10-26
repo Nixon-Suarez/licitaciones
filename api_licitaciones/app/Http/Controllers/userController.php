@@ -164,21 +164,31 @@ class userController extends Controller
             return;
         }
     }
-    public function actualizarUsuarioControlador()
+    public function actualizarUsuarioControlador($usuario_autenticado = null)
     {   
         try{
             #Almacenar Datos
             $input = json_decode(file_get_contents("php://input"), true);
 
             $id = trim($this->limpiarCadena($input['id_usuario'] ?? ''));
-            $input = json_decode(file_get_contents("php://input"), true);
-            $usuario_nombre = trim($this->limpiarCadena($input['register_nombre'] ?? ''));
-            $usuario_apellido = trim($this->limpiarCadena($input['register_apellido'] ?? ''));
-            $usuario = trim($this->limpiarCadena($input['register_usuario'] ?? ''));
-            $usuario_clave_1 = trim($this->limpiarCadena($input['register_clave1'] ?? ''));
-            $usuario_clave_2 = trim($this->limpiarCadena($input['register_clave2'] ?? ''));
+            #Un administrador puede editar a cualquiera; los demás solo su propio perfil
+            $id_autenticado = (int) ($usuario_autenticado->id ?? 0);
+            $perfil_autenticado = (int) ($usuario_autenticado->perfil ?? 0);
+            if ($perfil_autenticado !== 1 && $id_autenticado !== (int) $id) {
+                http_response_code(403);
+                echo json_encode([
+                    "code" => 403,
+                    "data" => 'No tienes permisos para editar este usuario'
+                ]);
+                return;
+            }
+            $usuario_nombre = trim($this->limpiarCadena($input['nombre'] ?? ''));
+            $usuario_apellido = trim($this->limpiarCadena($input['apellido'] ?? ''));
+            $usuario = trim($this->limpiarCadena($input['usuario'] ?? ''));
+            $usuario_clave_1 = trim($this->limpiarCadena($input['clave'] ?? ''));
+            $usuario_clave_2 = trim($this->limpiarCadena($input['clave2'] ?? ''));
             // verificar campos obligatorios
-            if ($usuario_nombre == "" || $usuario == "" || $usuario_clave_1 == "" || $usuario_clave_2 == "") {
+            if ($usuario_nombre == "" || $usuario == "" ) {
                 http_response_code(400);
                 echo json_encode([
                     "code" => 400,
@@ -211,7 +221,7 @@ class userController extends Controller
                 ]);
                 return;
             }
-            elseif ($this->verificarDatos("^[a-zA-Z0-9$@.-]{7,100}$", $usuario_clave_1)) {
+            elseif ($usuario_clave_1 != '' && $this->verificarDatos("^[a-zA-Z0-9$@.-]{7,100}$", $usuario_clave_1)) {
                 http_response_code(400);
                 echo json_encode([
                     "code" => 400,
@@ -219,9 +229,21 @@ class userController extends Controller
                 ]);
                 return;
             }
-            # Verificando el usuario
-            $check_usuario = Usuario::where("usuario_usuario", $usuario)->first();
-            if ($check_usuario) {
+            # Verificando que el usuario exista
+            $check_usuario = Usuario::where("id", $id)->first();
+            if (!$check_usuario) {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => "El usuario seleccionado no existe"
+                ]);
+                return;
+            }
+            # Verificando que el nombre de usuario no lo use otro usuario
+            $usuario_duplicado = Usuario::where("usuario_usuario", $usuario)
+                ->where("id", "!=", $id)
+                ->first();
+            if ($usuario_duplicado) {
                 http_response_code(400);
                 echo json_encode([
                     "code" => 400,
@@ -229,37 +251,34 @@ class userController extends Controller
                 ]);
                 return;
             }
-            #Verificando si las claves son iguales
-            if ($usuario_clave_1 != $usuario_clave_2) {
-                http_response_code(400);
-                echo json_encode([
-                    "code" => 400,
-                    "data" => 'Las claves no coinciden'
-                ]);
-                return;
-            }
-            else {
-                $clave_procesada = password_hash($usuario_clave_1, PASSWORD_BCRYPT, ["cost" => 10]); # encripta la clave
-            }
-            $check_usuario = Usuario::where("id", $id)->first();
-            if (!$check_usuario) {
-                    http_response_code(400);
-                    echo json_encode([
-                        "code" => 400,
-                        "data" => "El usuario seleccionado no existe"
-                    ]);
-                    return;
-                }
-            #Preparando datos para el registro
+            #Preparando datos para la actualización
             $datos_usuario_reg = [
                 "usuario_nombre" => $usuario_nombre,
                 "usuario_apellido" => $usuario_apellido,
-                "usuario_usuario" => $usuario,
-                "usuario_clave" => $clave_procesada,
-                'usuario_creado' => date("Y-m-d H:i:s")
+                "usuario_usuario" => $usuario
             ];
-            $update_usuario = Usuario::where('id', $id)
-                    ->update($datos_usuario_reg);
+            #Solo se actualiza la clave si se envía una nueva
+            if ($usuario_clave_1 !== '' || $usuario_clave_2 !== '') {
+                if ($usuario_clave_1 === '' || $usuario_clave_2 === '') {
+                    http_response_code(400);
+                    echo json_encode([
+                        "code" => 400,
+                        "data" => 'Las claves no coinciden'
+                    ]);
+                    return;
+                }
+                if ($usuario_clave_1 !== $usuario_clave_2) {
+                    http_response_code(400);
+                    echo json_encode([
+                        "code" => 400,
+                        "data" => 'Las claves no coinciden'
+                    ]);
+                    return;
+                }
+                $datos_usuario_reg["usuario_clave"] = password_hash($usuario_clave_1, PASSWORD_BCRYPT, ["cost" => 10]); # encripta la clave
+            }
+            $check_usuario->fill($datos_usuario_reg);
+            $update_usuario = $check_usuario->save();
             if ($update_usuario) {
                 http_response_code(200);
                 echo json_encode([
@@ -282,6 +301,45 @@ class userController extends Controller
             echo json_encode([
                 "code" => 500,
                 "data" => 'Error al actualizar el usuario, intente nuevamente'
+            ]);
+            return;
+        }
+    }
+
+    public function getUsuario($id_user){
+        $id = trim($this->limpiarCadena($id_user ?? ''));
+        try {
+            if (!is_numeric($id) || $id <= 0) {
+                http_response_code(400);
+                echo json_encode([
+                    "code" => 400,
+                    "data" => 'ID de usuario no válido'
+                ]);
+                return;
+            }
+            $usuario = Usuario::where("id", $id)
+                ->select('id', 'usuario_nombre', 'usuario_apellido', 'usuario_usuario')
+                ->first();
+            if (!$usuario) {
+                http_response_code(404);
+                echo json_encode([
+                    "code" => 404,
+                    "data" => 'El usuario no existe'
+                ]);
+                return;
+            }
+            http_response_code(200);
+            echo json_encode([
+                "code" => 200,
+                "data" => $usuario
+            ]);
+            return;
+        } catch (\Exception $e) {
+            error_log("Error en getUsuario: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode([
+                "code" => 500,
+                "data" => 'Error al obtener el usuario, intente nuevamente' . $e->getMessage()
             ]);
             return;
         }
